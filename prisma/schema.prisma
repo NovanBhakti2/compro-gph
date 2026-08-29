@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  schemas = ["companyprofile"]
+}
+
+model news {
+  id            String     @id @db.VarChar(36)
+  title         String     @db.VarChar(255)
+  slug          String     @unique @db.VarChar(255)
+  content       String
+  thumbnail_url String?    @db.VarChar(500)
+  status        NewsStatus @default(DRAFT)
+  author_id     String     @db.VarChar(36)
+  published_at  DateTime?
+  created_at    DateTime   @default(now())
+  updated_at    DateTime   @default(now())
+  users         users      @relation(fields: [author_id], references: [id], onDelete: Cascade, map: "fk_news_author")
+
+  @@schema("companyprofile")
+}
+
+model users {
+  id         String   @id @db.VarChar(36)
+  email      String   @unique @db.VarChar(255)
+  name       String   @db.VarChar(255)
+  password   String   @db.VarChar(255)
+  role       Role     @default(USER)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  news       news[]
+
+  @@schema("companyprofile")
+}
+
+enum NewsStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+
+  @@schema("companyprofile")
+}
+
+enum Role {
+  USER
+  ADMIN
+  EDITOR
+
+  @@schema("companyprofile")
+}
