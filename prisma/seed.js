@@ -12,7 +12,6 @@ const prisma = new PrismaClient({ adapter });
 async function main() {
   console.log('Memulai seeding data...');
 
-  // 1. Insert User
   const user = await prisma.users.create({
     data: {
       id: 'usr-' + Date.now(),
@@ -25,7 +24,6 @@ async function main() {
 
   console.log('User created:', user);
 
-  // 2. Insert News
   const news = await prisma.news.create({
     data: {
       id: 'news-' + Date.now(),
