@@ -4,7 +4,7 @@ import React from "react";
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
 
-  const waNumber = "6289638487742";
+  const waNumber = "6281122887789";
 
   const waText = encodeURIComponent(
     "Halo Gama Putra Harmoni, saya ingin menanyakan informasi lebih lanjut mengenai layanan Anda.",

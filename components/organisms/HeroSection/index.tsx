@@ -63,7 +63,7 @@ export const HeroSection = () => {
             </Link>
 
             <Link
-              href="/contact"
+              href="#team"
               className="inline-flex items-center justify-center px-6 py-3.5 rounded-xl text-sm font-semibold text-white border border-slate-700 bg-slate-900/40 hover:bg-slate-800/60 backdrop-blur-sm active:scale-95 transition-transform duration-200"
             >
               Contact Our Team

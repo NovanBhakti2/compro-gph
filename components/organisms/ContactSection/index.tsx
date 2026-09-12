@@ -45,7 +45,6 @@ export const ContactSection = () => {
   return (
     <section id="contact" className="py-24 px-6 lg:px-20 bg-white scroll-mt-24">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
-        {/* Left Column */}
         <div className="space-y-8">
           <div className="space-y-3">
             <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#C7974C]/50 bg-[#C7974C]/10">
