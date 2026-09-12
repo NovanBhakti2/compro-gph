@@ -18,9 +18,9 @@ export const HeroSection = () => {
 
       <div className="relative z-10 max-w-4xl py-20 space-y-6">
         <FadeIn delay={0.2} direction="down">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#c5aa7a]/40 bg-[#c5aa7a]/10 backdrop-blur-md">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#c5aa7a]" />
-            <span className="text-xs font-medium text-[#c5aa7a] tracking-wide">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#C7974C]/40 bg-[#C7974C]/10 backdrop-blur-md">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#C7974C]" />
+            <span className="text-xs font-medium text-[#C7974C] tracking-wide">
               Professional Consulting & Training
             </span>
           </div>
@@ -44,7 +44,7 @@ export const HeroSection = () => {
           <div className="flex flex-wrap items-center gap-4 pt-4">
             <Link
               href="/services"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-semibold text-[#0f1932] bg-[#c5aa7a] hover:bg-[#d8bd8d] transition-all shadow-lg shadow-[#c5aa7a]/20"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-semibold text-[#0f1932] bg-[#C7974C] hover:bg-[#d8bd8d] transition-all shadow-lg shadow-[#C7974C]/20"
             >
               Explore Our Services
               <svg

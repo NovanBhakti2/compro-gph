@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import NavLink from "@/components/molecules/Navlink";
+import Image from "next/image";
 
 const serviceItems = [
   { label: "Hospitality Consulting", href: "/services/hospitality" },
@@ -67,16 +68,24 @@ export const Navbar: React.FC = () => {
           </button>
 
           <NavbarBrand>
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-9 h-9 rounded-xl bg-[#c5aa7a] flex items-center justify-center text-white/70 leading-tight font-black text-lg shadow-md shadow-[#c5aa7a]/20 group-hover:scale-105 transition-transform">
-                G
+            <Link href="/" className="flex items-center gap-3 group">
+              <div className="w-10 h-10 rounded-xl bg-transparent p-0.5 overflow-hidden flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
+                <Image
+                  src="/gph-logo.png"
+                  alt="Gama Putra Harmoni Logo"
+                  width={100}
+                  height={100}
+                  className="object-contain w-full h-full scale-150 object-center"
+                />
               </div>
+
+              {/* Nama Perusahaan */}
               <div className="flex flex-col">
-                <span className="font-extrabold text-xl tracking-tight text-[#c5aa7a] leading-tight">
-                  GPH<span className="text-white/70">.</span>
+                <span className="font-extrabold text-lg tracking-tight text-[#C7974C] leading-tight">
+                  Gama Putra Harmoni
                 </span>
                 <span className="text-[10px] tracking-widest uppercase font-semibold text-white/70 leading-tight">
-                  Gama Putra Harmoni
+                  Consulting & Training
                 </span>
               </div>
             </Link>
@@ -84,14 +93,14 @@ export const Navbar: React.FC = () => {
         </NavbarContent>
 
         <NavbarContent className="hidden sm:flex gap-6" justify="center">
-          <NavbarItem className="text-white/70 hover:text-[#c5aa7a]">
+          <NavbarItem className="text-white/70 hover:text-[#C7974C]">
             <NavLink href="/#home" label="Home" />
           </NavbarItem>
-          <NavbarItem className="text-white/70 hover:text-[#c5aa7a]">
+          <NavbarItem className="text-white/70 hover:text-[#C7974C]">
             <NavLink href="/#about" label="About" />
           </NavbarItem>
 
-          <NavbarItem
+          {/* <NavbarItem
             className="relative flex items-center"
             onMouseEnter={() => setIsServiceDropdownOpen(true)}
             onMouseLeave={() => setIsServiceDropdownOpen(false)}
@@ -101,8 +110,8 @@ export const Navbar: React.FC = () => {
               suppressHydrationWarning
               className={`flex items-center gap-1 text-sm font-medium transition-colors duration-200 cursor-pointer mt-0.5 ${
                 isServiceActive
-                  ? "text-[#c5aa7a]"
-                  : "text-white/70 hover:text-[#c5aa7a]"
+                  ? "text-[#C7974C]"
+                  : "text-white/70 hover:text-[#C7974C]"
               }`}
             >
               <span className="text-white">Services</span>
@@ -132,8 +141,8 @@ export const Navbar: React.FC = () => {
                       href={service.href}
                       className={`px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                         pathname === service.href
-                          ? "text-[#c5aa7a] bg-slate-50 font-semibold shadow-xs"
-                          : "text-white hover:text-[#c5aa7a] hover:bg-slate-50"
+                          ? "text-[#C7974C] bg-slate-50 font-semibold shadow-xs"
+                          : "text-white hover:text-[#C7974C] hover:bg-slate-50"
                       }`}
                     >
                       {service.label}
@@ -142,12 +151,12 @@ export const Navbar: React.FC = () => {
                 </div>
               </div>
             )}
-          </NavbarItem>
+          </NavbarItem> */}
 
-          <NavbarItem className="text-white/70 hover:text-[#c5aa7a]">
+          <NavbarItem className="text-white/70 hover:text-[#C7974C]">
             <NavLink href="/#team" label="Team" />
           </NavbarItem>
-          <NavbarItem className="text-white/70 hover:text-[#c5aa7a]">
+          <NavbarItem className="text-white/70 hover:text-[#C7974C]">
             <NavLink href="/#contact" label="Contact" />
           </NavbarItem>
         </NavbarContent>
@@ -157,7 +166,7 @@ export const Navbar: React.FC = () => {
             <NavbarItem>
               <Link
                 href="/#contact"
-                className="inline-flex items-center justify-center text-sm font-semibold px-4 py-2 rounded-xl text-white bg-gradient-to-r from-[#c5aa7a] to-[#a88c5a] hover:from-[#d4b88a] hover:to-[#b89c6a] shadow-md shadow-[#c5aa7a]/20 hover:shadow-[#c5aa7a]/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+                className="inline-flex items-center justify-center text-sm font-semibold px-4 py-2 rounded-xl text-white bg-gradient-to-r from-[#C7974C] to-[#a88c5a] hover:from-[#d4b88a] hover:to-[#b89c6a] shadow-md shadow-[#C7974C]/20 hover:shadow-[#C7974C]/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
               >
                 Get in Touch
               </Link>
@@ -186,10 +195,10 @@ export const Navbar: React.FC = () => {
           <div>
             <div className="flex items-center justify-between pb-6 border-b border-slate-100">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-[#c5aa7a] flex items-center justify-center text-white/70 leading-tight font-black text-sm">
+                <div className="w-8 h-8 rounded-lg bg-[#C7974C] flex items-center justify-center text-white/70 leading-tight font-black text-sm">
                   G
                 </div>
-                <span className="font-extrabold text-lg text-[#c5aa7a]">
+                <span className="font-extrabold text-lg text-[#C7974C]">
                   GPH<span className="text-slate-400">.</span>
                 </span>
               </div>
@@ -220,7 +229,7 @@ export const Navbar: React.FC = () => {
                 onClick={() => setIsSidebarOpen(false)}
                 className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                   pathname === "/"
-                    ? "bg-[#c5aa7a] text-white shadow-md shadow-[#c5aa7a]/20"
+                    ? "bg-[#C7974C] text-white shadow-md shadow-[#C7974C]/20"
                     : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                 }`}
               >
@@ -235,7 +244,7 @@ export const Navbar: React.FC = () => {
                 onClick={() => setIsSidebarOpen(false)}
                 className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                   pathname === "/about"
-                    ? "bg-[#c5aa7a] text-white shadow-md shadow-[#c5aa7a]/20"
+                    ? "bg-[#C7974C] text-white shadow-md shadow-[#C7974C]/20"
                     : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                 }`}
               >
@@ -245,13 +254,13 @@ export const Navbar: React.FC = () => {
                 )}
               </Link>
 
-              <div>
+              {/* <div>
                 <button
                   type="button"
                   onClick={() => setIsMobileServiceOpen(!isMobileServiceOpen)}
                   className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                     isServiceActive
-                      ? "text-[#c5aa7a] bg-[#c5aa7a]/10"
+                      ? "text-[#C7974C] bg-[#C7974C]/10"
                       : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                   }`}
                 >
@@ -282,7 +291,7 @@ export const Navbar: React.FC = () => {
                         onClick={() => setIsSidebarOpen(false)}
                         className={`text-xs py-2 px-3 rounded-lg font-medium transition-all ${
                           pathname === service.href
-                            ? "bg-[#c5aa7a] text-white font-semibold shadow-sm"
+                            ? "bg-[#C7974C] text-white font-semibold shadow-sm"
                             : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
                         }`}
                       >
@@ -291,14 +300,14 @@ export const Navbar: React.FC = () => {
                     ))}
                   </div>
                 )}
-              </div>
+              </div> */}
 
               <Link
                 href="/team"
                 onClick={() => setIsSidebarOpen(false)}
                 className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                   pathname === "/team"
-                    ? "bg-[#c5aa7a] text-white shadow-md shadow-[#c5aa7a]/20"
+                    ? "bg-[#C7974C] text-white shadow-md shadow-[#C7974C]/20"
                     : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                 }`}
               >
@@ -313,7 +322,7 @@ export const Navbar: React.FC = () => {
                 onClick={() => setIsSidebarOpen(false)}
                 className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                   pathname === "/#contact"
-                    ? "bg-[#c5aa7a] text-white shadow-md shadow-[#c5aa7a]/20"
+                    ? "bg-[#C7974C] text-white shadow-md shadow-[#C7974C]/20"
                     : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                 }`}
               >
@@ -329,7 +338,7 @@ export const Navbar: React.FC = () => {
             <Link
               href="/#contact"
               onClick={() => setIsSidebarOpen(false)}
-              className="w-full flex items-center justify-center py-3 text-sm font-semibold rounded-xl text-white bg-[#c5aa7a] hover:bg-[#d4b88a] shadow-md shadow-[#c5aa7a]/20 transition"
+              className="w-full flex items-center justify-center py-3 text-sm font-semibold rounded-xl text-white bg-[#C7974C] hover:bg-[#d4b88a] shadow-md shadow-[#C7974C]/20 transition"
             >
               Get in Touch
             </Link>

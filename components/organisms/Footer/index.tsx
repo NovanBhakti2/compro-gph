@@ -1,15 +1,28 @@
+import Image from "next/image";
 import React from "react";
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
+
+  const waNumber = "6289638487742";
+
+  const waText = encodeURIComponent(
+    "Halo Gama Putra Harmoni, saya ingin menanyakan informasi lebih lanjut mengenai layanan Anda.",
+  );
 
   return (
     <footer className="w-full bg-[#0f1932] text-neutral-300 py-12 px-6 border-t border-neutral-800">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
         <div className="space-y-4 md:col-span-1">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[#c5aa7a] flex items-center justify-center text-white font-black text-lg shadow-md shadow-[#c5aa7a]/20">
-              G
+            <div className="w-10 h-10 rounded-xl bg-transparent p-0.5 overflow-hidden flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
+              <Image
+                src="/gph-logo.png"
+                alt="Gama Putra Harmoni Logo"
+                width={100}
+                height={100}
+                className="object-contain w-full h-full scale-150 object-center"
+              />
             </div>
             <h2 className="text-xl font-bold text-white">Gama Putra Harmoni</h2>
           </div>
@@ -24,22 +37,22 @@ export const Footer = () => {
           <h3 className="font-semibold text-white mb-3">Perusahaan</h3>
           <ul className="space-y-2 text-sm">
             <li>
-              <a href="#" className="hover:text-[#c5aa7a] transition-colors">
+              <a href="#" className="hover:text-[#C7974C] transition-colors">
                 Tentang Kami
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-[#c5aa7a] transition-colors">
+              <a href="#" className="hover:text-[#C7974C] transition-colors">
                 Karier
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-[#c5aa7a] transition-colors">
+              <a href="#" className="hover:text-[#C7974C] transition-colors">
                 Blog
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-[#c5aa7a] transition-colors">
+              <a href="#" className="hover:text-[#C7974C] transition-colors">
                 Kontak
               </a>
             </li>
@@ -51,17 +64,17 @@ export const Footer = () => {
           <h3 className="font-semibold text-white mb-3">Legal</h3>
           <ul className="space-y-2 text-sm">
             <li>
-              <a href="#" className="hover:text-[#c5aa7a] transition-colors">
+              <a href="#" className="hover:text-[#C7974C] transition-colors">
                 Kebijakan Privasi
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-[#c5aa7a] transition-colors">
+              <a href="#" className="hover:text-[#C7974C] transition-colors">
                 Syarat & Ketentuan
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-[#c5aa7a] transition-colors">
+              <a href="#" className="hover:text-[#C7974C] transition-colors">
                 Keamanan
               </a>
             </li>
@@ -73,7 +86,7 @@ export const Footer = () => {
           <ul className="space-y-3 text-sm">
             <li>
               <a
-                href="https://wa.me/6289638487742"
+                href={`https://wa.me/${waNumber}?text=${waText}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2.5 text-neutral-300 hover:text-white transition group"

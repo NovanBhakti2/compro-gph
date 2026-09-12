@@ -21,8 +21,8 @@ export const ExecutivesLegalitySection = () => {
       {/* Executives Section */}
       <section className="py-24 px-6 lg:px-20 bg-white">
         <div className="max-w-4xl mx-auto space-y-6">
-          <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#c5aa7a]/50 bg-[#c5aa7a]/10">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#c5aa7a]" />
+          <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#C7974C]/50 bg-[#C7974C]/10">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#C7974C]" />
             <span className="text-xs font-semibold text-[#9c7d42] tracking-wide">
               Leadership & Expertise
             </span>
@@ -68,8 +68,8 @@ export const ExecutivesLegalitySection = () => {
       <section className="py-20 px-6 lg:px-20 bg-slate-50/50">
         <div className="max-w-7xl mx-auto space-y-10">
           <div className="text-center space-y-3">
-            <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#c5aa7a]/50 bg-[#c5aa7a]/10">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#c5aa7a]" />
+            <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#C7974C]/50 bg-[#C7974C]/10">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#C7974C]" />
               <span className="text-xs font-semibold text-[#9c7d42] tracking-wide">
                 Corporate Integrity
               </span>
@@ -83,10 +83,10 @@ export const ExecutivesLegalitySection = () => {
             {legalities.map((item, index) => (
               <div
                 key={index}
-                className="group bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-4 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:border-[#c5aa7a]/50 hover:bg-gradient-to-b hover:from-white hover:to-[#c5aa7a]/5 cursor-pointer"
+                className="group bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-4 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:border-[#C7974C]/50 hover:bg-gradient-to-b hover:from-white hover:to-[#C7974C]/5 cursor-pointer"
               >
                 {/* Wadah Ikon dengan efek animasi saat di-hover */}
-                <div className="w-12 h-12 rounded-2xl bg-[#c5aa7a]/10 flex items-center justify-center text-[#c5aa7a] transition-all duration-300 group-hover:scale-110 group-hover:bg-[#c5aa7a] group-hover:text-white shadow-sm">
+                <div className="w-12 h-12 rounded-2xl bg-[#C7974C]/10 flex items-center justify-center text-[#C7974C] transition-all duration-300 group-hover:scale-110 group-hover:bg-[#C7974C] group-hover:text-white shadow-sm">
                   <svg
                     className="w-6 h-6 transition-transform duration-300 group-hover:rotate-6"
                     fill="none"

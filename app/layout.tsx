@@ -8,8 +8,11 @@ import { Footer } from "@/components/organisms/Footer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Company Profile - GPH",
+  title: "Gama Putra Harmoni",
   description: "Official Website Company Profile GPH",
+  icons: {
+    icon: "/gph-logo.png",
+  },
 };
 
 export default function RootLayout({
@@ -22,9 +25,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <Providers>
           <Navbar />
-          <main className="min-h-screen">
-            {children}
-          </main>
+          <main className="min-h-screen">{children}</main>
           <Footer />
         </Providers>
       </body>

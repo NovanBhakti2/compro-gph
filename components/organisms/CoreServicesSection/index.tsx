@@ -9,7 +9,7 @@ const coreServices = [
       "https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1000&auto=format&fit=crop",
     icon: (
       <svg
-        className="w-5 h-5 text-[#c5aa7a]"
+        className="w-5 h-5 text-[#C7974C]"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -30,7 +30,7 @@ const coreServices = [
       "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1000&auto=format&fit=crop",
     icon: (
       <svg
-        className="w-5 h-5 text-[#c5aa7a]"
+        className="w-5 h-5 text-[#C7974C]"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -51,7 +51,7 @@ const coreServices = [
       "https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=1000&auto=format&fit=crop",
     icon: (
       <svg
-        className="w-5 h-5 text-[#c5aa7a]"
+        className="w-5 h-5 text-[#C7974C]"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -75,8 +75,8 @@ export const CoreServicesSection = () => {
     >
       <div className="max-w-7xl mx-auto space-y-12">
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#c5aa7a]/50 bg-[#c5aa7a]/10">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#c5aa7a]" />
+          <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#C7974C]/50 bg-[#C7974C]/10">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#C7974C]" />
             <span className="text-xs font-semibold text-[#9c7d42] tracking-wide">
               What We Deliver
             </span>
@@ -108,7 +108,7 @@ export const CoreServicesSection = () => {
                   <span className="transition-transform duration-300 group-hover:scale-110">
                     {service.icon}
                   </span>
-                  <h3 className="text-xl font-bold text-[#0f1932] group-hover:text-[#c5aa7a] transition-colors duration-300">
+                  <h3 className="text-xl font-bold text-[#0f1932] group-hover:text-[#C7974C] transition-colors duration-300">
                     {service.title}
                   </h3>
                 </div>

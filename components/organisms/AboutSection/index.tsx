@@ -8,8 +8,8 @@ export const AboutSection = () => {
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
         <FadeIn delay={0.2} direction="right">
           <div className="space-y-6">
-            <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#c5aa7a]/50 bg-[#c5aa7a]/10">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#c5aa7a]" />
+            <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#C7974C]/50 bg-[#C7974C]/10">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#C7974C]" />
               <span className="text-xs font-semibold text-[#9c7d42] tracking-wide">
                 About The Company
               </span>

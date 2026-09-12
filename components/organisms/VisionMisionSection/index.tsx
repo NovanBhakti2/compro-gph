@@ -16,8 +16,8 @@ export const VisionMissionSection = () => {
       <div className="max-w-7xl mx-auto space-y-10">
         <FadeIn delay={0.2} direction="down">
           <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#c5aa7a]/50 bg-[#c5aa7a]/10">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#c5aa7a]" />
+            <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#C7974C]/50 bg-[#C7974C]/10">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#C7974C]" />
               <span className="text-xs font-semibold text-[#9c7d42] tracking-wide">
                 Our Foundation
               </span>
@@ -37,14 +37,14 @@ export const VisionMissionSection = () => {
               onClick={() => handleCardClick("mission")}
               className={`h-full p-8 sm:p-10 rounded-3xl cursor-pointer transition-all duration-500 flex flex-col justify-between space-y-8 select-none ${
                 activeCard === "mission"
-                  ? "bg-[#0f1932] text-white shadow-2xl scale-[1.02] border border-[#c5aa7a]/30"
+                  ? "bg-[#0f1932] text-white shadow-2xl scale-[1.02] border border-[#C7974C]/30"
                   : "bg-white text-slate-800 shadow-sm border border-slate-100 hover:border-slate-200"
               }`}
             >
               <div
                 className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors duration-500 ${
                   activeCard === "mission"
-                    ? "bg-[#c5aa7a] text-[#0f1932]"
+                    ? "bg-[#C7974C] text-[#0f1932]"
                     : "bg-slate-900 text-white"
                 }`}
               >
@@ -98,14 +98,14 @@ export const VisionMissionSection = () => {
               onClick={() => handleCardClick("vision")}
               className={`h-full p-8 sm:p-10 rounded-3xl cursor-pointer transition-all duration-500 flex flex-col justify-between space-y-8 select-none ${
                 activeCard === "vision"
-                  ? "bg-[#0f1932] text-white shadow-2xl scale-[1.02] border border-[#c5aa7a]/30"
+                  ? "bg-[#0f1932] text-white shadow-2xl scale-[1.02] border border-[#C7974C]/30"
                   : "bg-white text-slate-800 shadow-sm border border-slate-100 hover:border-slate-200"
               }`}
             >
               <div
                 className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors duration-500 ${
                   activeCard === "vision"
-                    ? "bg-[#c5aa7a] text-[#0f1932]"
+                    ? "bg-[#C7974C] text-[#0f1932]"
                     : "bg-slate-900 text-white"
                 }`}
               >
