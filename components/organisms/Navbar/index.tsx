@@ -79,9 +79,8 @@ export const Navbar: React.FC = () => {
                 />
               </div>
 
-              {/* Nama Perusahaan */}
               <div className="flex flex-col">
-                <span className="font-extrabold text-lg tracking-tight text-[#C7974C] leading-tight">
+                <span className="font-bold text-lg tracking-tight text-[#C7974C] leading-tight">
                   Gama Putra Harmoni
                 </span>
                 <span className="text-[10px] tracking-widest uppercase font-semibold text-white/70 leading-tight">

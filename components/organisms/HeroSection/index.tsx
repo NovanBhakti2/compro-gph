@@ -43,7 +43,7 @@ export const HeroSection = () => {
         <FadeIn delay={0.8} direction="right">
           <div className="flex flex-wrap items-center gap-4 pt-4">
             <Link
-              href="/services"
+              href="#services"
               className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-semibold text-[#0f1932] bg-[#C7974C] hover:bg-[#d8bd8d] transition-all shadow-lg shadow-[#C7974C]/20"
             >
               Explore Our Services
