@@ -162,7 +162,7 @@ export const Navbar: React.FC = () => {
 
         {!isSidebarOpen && (
           <NavbarContent justify="end" className="gap-3">
-            <NavbarItem>
+            <NavbarItem className="hidden sm:flex">
               <Link
                 href="/#contact"
                 className="inline-flex items-center justify-center text-sm font-semibold px-4 py-2 rounded-xl text-white bg-gradient-to-r from-[#C7974C] to-[#a88c5a] hover:from-[#d4b88a] hover:to-[#b89c6a] shadow-md shadow-[#C7974C]/20 hover:shadow-[#C7974C]/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
@@ -194,11 +194,17 @@ export const Navbar: React.FC = () => {
           <div>
             <div className="flex items-center justify-between pb-6 border-b border-slate-100">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-[#C7974C] flex items-center justify-center text-white/70 leading-tight font-black text-sm">
-                  G
+                <div className="w-10 h-10 rounded-xl bg-transparent p-0.5 overflow-hidden flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <Image
+                    src="/gph-logo.png"
+                    alt="Gama Putra Harmoni Logo"
+                    width={100}
+                    height={100}
+                    className="object-contain w-full h-full scale-150 object-center"
+                  />
                 </div>
-                <span className="font-extrabold text-lg text-[#C7974C]">
-                  GPH<span className="text-slate-400">.</span>
+                <span className="font-bold text-lg text-[#C7974C]">
+                  Gama Putra Harmoni<span className="text-slate-400">.</span>
                 </span>
               </div>
               <button
@@ -224,7 +230,7 @@ export const Navbar: React.FC = () => {
 
             <nav className="flex flex-col gap-1.5 mt-6">
               <Link
-                href="/"
+                href="/#home"
                 onClick={() => setIsSidebarOpen(false)}
                 className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                   pathname === "/"
@@ -239,7 +245,7 @@ export const Navbar: React.FC = () => {
               </Link>
 
               <Link
-                href="/about"
+                href="/#about"
                 onClick={() => setIsSidebarOpen(false)}
                 className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                   pathname === "/about"
@@ -302,7 +308,7 @@ export const Navbar: React.FC = () => {
               </div> */}
 
               <Link
-                href="/team"
+                href="/#team"
                 onClick={() => setIsSidebarOpen(false)}
                 className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                   pathname === "/team"
@@ -333,15 +339,14 @@ export const Navbar: React.FC = () => {
             </nav>
           </div>
 
-          <div className="pt-4 border-t border-slate-100">
+          {/* <div className="pt-4 border-t border-slate-100">
             <Link
-              href="/#contact"
-              onClick={() => setIsSidebarOpen(false)}
-              className="w-full flex items-center justify-center py-3 text-sm font-semibold rounded-xl text-white bg-[#C7974C] hover:bg-[#d4b88a] shadow-md shadow-[#C7974C]/20 transition"
+              href="#contact"
+              className="hidden sm:inline-flex items-center justify-center px-4 py-2 bg-[#c5aa7a] hover:bg-[#b39768] text-white font-semibold rounded-xl text-sm transition whitespace-nowrap"
             >
               Get in Touch
             </Link>
-          </div>
+          </div> */}
         </aside>
       </div>
     </>
