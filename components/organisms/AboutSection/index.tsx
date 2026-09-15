@@ -6,7 +6,7 @@ export const AboutSection = () => {
   return (
     <section id="about" className="py-24 px-6 lg:px-20 bg-white scroll-mt-24">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-        <FadeIn delay={0.2} direction="right">
+        <FadeIn delay={0.1} direction="right">
           <div className="space-y-6">
             <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#C7974C]/50 bg-[#C7974C]/10">
               <span className="w-1.5 h-1.5 rounded-full bg-[#C7974C]" />
@@ -34,7 +34,7 @@ export const AboutSection = () => {
           </div>
         </FadeIn>
 
-        <FadeIn delay={0.4} direction="left">
+        <FadeIn delay={0.1} direction="left">
           <div className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border border-slate-100">
             <Image
               src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop"

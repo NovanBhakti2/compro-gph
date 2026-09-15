@@ -17,7 +17,7 @@ export const HeroSection = () => {
       <div className="absolute inset-0 z-0 bg-gradient-to-r from-[#0b1329] via-[#0f1932]/90 to-transparent" />
 
       <div className="relative z-10 max-w-4xl py-20 space-y-6">
-        <FadeIn delay={0.2} direction="down">
+        <FadeIn delay={0.1} direction="down">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#C7974C]/40 bg-[#C7974C]/10 backdrop-blur-md">
             <span className="w-1.5 h-1.5 rounded-full bg-[#C7974C]" />
             <span className="text-xs font-medium text-[#C7974C] tracking-wide">
@@ -26,21 +26,21 @@ export const HeroSection = () => {
           </div>
         </FadeIn>
 
-        <FadeIn delay={0.4} direction="left">
+        <FadeIn delay={0.1} direction="left">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-[1.15] tracking-tight">
             Experience the Best of Hospitality, Elevated by Our Commitment to
             Safety & Standards
           </h1>
         </FadeIn>
 
-        <FadeIn delay={0.6} direction="up">
+        <FadeIn delay={0.1} direction="up">
           <p className="text-base sm:text-lg text-slate-300 max-w-2xl font-light leading-relaxed">
             Professional consulting and training company helping organizations
             improve performance, compliance, and operational excellence.
           </p>
         </FadeIn>
 
-        <FadeIn delay={0.8} direction="right">
+        <FadeIn delay={0.1} direction="right">
           <div className="flex flex-wrap items-center gap-4 pt-4">
             <Link
               href="#services"

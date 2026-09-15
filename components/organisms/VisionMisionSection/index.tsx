@@ -14,7 +14,7 @@ export const VisionMissionSection = () => {
   return (
     <section className="py-20 px-6 lg:px-20 bg-slate-50/60">
       <div className="max-w-7xl mx-auto space-y-10">
-        <FadeIn delay={0.2} direction="down">
+        <FadeIn delay={0.1} direction="down">
           <div className="space-y-3">
             <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#C7974C]/50 bg-[#C7974C]/10">
               <span className="w-1.5 h-1.5 rounded-full bg-[#C7974C]" />
@@ -32,7 +32,7 @@ export const VisionMissionSection = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Mission Card */}
-          <FadeIn delay={0.2} direction="right" className="h-full">
+          <FadeIn delay={0.1} direction="right" className="h-full">
             <div
               onClick={() => handleCardClick("mission")}
               className={`h-full p-8 sm:p-10 rounded-3xl cursor-pointer transition-all duration-500 flex flex-col justify-between space-y-8 select-none ${
@@ -93,7 +93,7 @@ export const VisionMissionSection = () => {
           </FadeIn>
 
           {/* Vision Card */}
-          <FadeIn delay={0.2} direction="left" className="h-full">
+          <FadeIn delay={0.1} direction="left" className="h-full">
             <div
               onClick={() => handleCardClick("vision")}
               className={`h-full p-8 sm:p-10 rounded-3xl cursor-pointer transition-all duration-500 flex flex-col justify-between space-y-8 select-none ${
