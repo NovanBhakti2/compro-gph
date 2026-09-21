@@ -1,5 +1,29 @@
 import React from "react";
 
+const founders = [
+  {
+    name: "Alex Rahardjo",
+    role: "Chief Executive Officer",
+    image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400",
+    bio: "Ex-Director di rantai hotel internasional dengan 12+ tahun pengalaman dalam manajemen operasional dan tata kelola sistem.",
+    linkedin: "#",
+  },
+  {
+    name: "Siti Nurhaliza",
+    role: "Chief Operating Officer",
+    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400",
+    bio: "Spesialis sertifikasi & standar manufaktur. Berhasil memimpin implementasi sistem audit di 20+ perusahaan multinasional.",
+    linkedin: "#",
+  },
+  {
+    name: "Budi Santoso",
+    role: "Head of Professional Training",
+    image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=400",
+    bio: "Praktisi pelatihan kepemimpinan dan konsultan keberlanjutan bisnis dengan sertifikasi tingkat global.",
+    linkedin: "#",
+  },
+];
+
 const legalities = [
   {
     label: "Deed of Establishment",
@@ -18,7 +42,6 @@ const legalities = [
 export const ExecutivesLegalitySection = () => {
   return (
     <div id="team" className="scroll-mt-24">
-      {/* Executives Section */}
       <section className="py-24 px-6 lg:px-20 bg-white">
         <div className="max-w-4xl mx-auto space-y-6">
           <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#C7974C]/50 bg-[#C7974C]/10">
@@ -56,7 +79,56 @@ export const ExecutivesLegalitySection = () => {
         </div>
       </section>
 
-      <div className="max-w-4xl mx-auto px-6 py-12 lg:px-20 -mt-12">
+      <section className="pb-16 px-6 lg:px-20 bg-white">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+          {founders.map((founder, index) => (
+            <div
+              key={index}
+              className="group relative bg-white rounded-3xl border border-slate-100 p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 flex flex-col justify-between overflow-hidden"
+            >
+              <div className="space-y-4">
+                <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-slate-100">
+                  <img
+                    src={founder.image}
+                    alt={founder.name}
+                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0f1932]/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </div>
+                <div>
+                  <span className="text-xs font-semibold text-[#9c7d42] tracking-wider uppercase">
+                    {founder.role}
+                  </span>
+                  <h3 className="text-xl font-bold text-[#0f1932] mt-0.5">
+                    {founder.name}
+                  </h3>
+                  <p className="text-sm text-slate-600 mt-2 leading-relaxed">
+                    {founder.bio}
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-6 mt-6 border-t border-slate-100 flex items-center justify-between">
+                <a
+                  href={founder.linkedin}
+                  className="inline-flex items-center gap-2 text-xs font-semibold text-[#0f1932] group-hover:text-[#C7974C] transition-colors"
+                >
+                  <svg
+                    className="w-4 h-4 fill-current"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.25V10.9H6.46M7.86 6.7a1.62 1.62 0 1 0 0 3.24 1.62 1.62 0 0 0 0-3.24Z" />
+                  </svg>
+                  Connect on LinkedIn
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Quote Section */}
+      <div className="max-w-4xl mx-auto px-6 py-12 lg:px-20 -mt-6">
         <div className="p-6 rounded-2xl bg-white border border-slate-100 shadow-sm text-center">
           <p className="text-xs sm:text-sm italic text-slate-700">
             &ldquo;Excellence is not a singular act, but a habit of continuous
@@ -65,6 +137,7 @@ export const ExecutivesLegalitySection = () => {
         </div>
       </div>
 
+      {/* Company Legality Section */}
       <section className="py-20 px-6 lg:px-20 bg-slate-50/50">
         <div className="max-w-7xl mx-auto space-y-10">
           <div className="text-center space-y-3">
@@ -85,7 +158,6 @@ export const ExecutivesLegalitySection = () => {
                 key={index}
                 className="group bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-4 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:border-[#C7974C]/50 hover:bg-gradient-to-b hover:from-white hover:to-[#C7974C]/5 cursor-pointer"
               >
-                {/* Wadah Ikon dengan efek animasi saat di-hover */}
                 <div className="w-12 h-12 rounded-2xl bg-[#C7974C]/10 flex items-center justify-center text-[#C7974C] transition-all duration-300 group-hover:scale-110 group-hover:bg-[#C7974C] group-hover:text-white shadow-sm">
                   <svg
                     className="w-6 h-6 transition-transform duration-300 group-hover:rotate-6"
