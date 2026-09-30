@@ -5,6 +5,7 @@ import NewsArticlesSection from "@/components/organisms/NewsArticlesSection";
 import { NewsItem } from "@/data/news";
 
 export const revalidate = 0;
+export const dynamic = "force-dynamic";
 
 async function getNewsData(): Promise<NewsItem[]> {
   try {
