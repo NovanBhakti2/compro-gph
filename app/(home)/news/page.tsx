@@ -3,13 +3,14 @@ import CtaSection from "@/components/organisms/CtaSection";
 import CuratedArticlesSection from "@/components/organisms/CuratedArticlesSection";
 import NewsArticlesSection from "@/components/organisms/NewsArticlesSection";
 import { NewsItem } from "@/data/news";
+import { getBaseUrl } from "@/lib/utils";
 
 export const revalidate = 0;
 export const dynamic = "force-dynamic";
 
 async function getNewsData(): Promise<NewsItem[]> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const baseUrl = getBaseUrl();
     const res = await fetch(`${baseUrl}/api/news`, {
       next: { revalidate: 0 },
     });
