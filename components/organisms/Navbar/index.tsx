@@ -156,7 +156,7 @@ export const Navbar: React.FC = () => {
             <NavLink href="/#team" label="Team" />
           </NavbarItem>
           <NavbarItem className="text-white/70 hover:text-[#C7974C]">
-            <NavLink href="/#contact" label="Contact" />
+            <NavLink href="/news" label="News & Articles" />
           </NavbarItem>
         </NavbarContent>
 
@@ -323,16 +323,16 @@ export const Navbar: React.FC = () => {
               </Link>
 
               <Link
-                href="/#contact"
+                href="/news"
                 onClick={() => setIsSidebarOpen(false)}
                 className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                  pathname === "/#contact"
+                  pathname === "/news"
                     ? "bg-[#C7974C] text-white shadow-md shadow-[#C7974C]/20"
                     : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                 }`}
               >
-                <span>Contact</span>
-                {pathname === "/#contact" && (
+                <span>News & Articles</span>
+                {pathname === "/news" && (
                   <span className="w-1.5 h-1.5 rounded-full bg-white" />
                 )}
               </Link>

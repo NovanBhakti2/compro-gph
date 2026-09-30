@@ -1,36 +1,56 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider = "postgresql"
-  schemas = ["companyprofile"]
+  schemas  = ["companyprofile"]
 }
 
 model news {
-  id            String     @id @db.VarChar(36)
-  title         String     @db.VarChar(255)
-  slug          String     @unique @db.VarChar(255)
+  id            String      @id @default(uuid()) @db.VarChar(36)
+  title         String      @db.VarChar(255)
+  slug          String      @unique @db.VarChar(255)
   content       String
-  thumbnail_url String?    @db.VarChar(500)
-  status        NewsStatus @default(DRAFT)
-  author_id     String     @db.VarChar(36)
+  thumbnail_url String?     @db.VarChar(500)
+  status        NewsStatus  @default(DRAFT)
+
+  author_id     String      @db.VarChar(36)
+  users         users       @relation(fields: [author_id], references: [id], onDelete: Cascade, map: "fk_news_author")
+
+  category_id   String?     @db.VarChar(36)
+  categories    categories? @relation(fields: [category_id], references: [id], onDelete: SetNull, map: "fk_news_category")
+
   published_at  DateTime?
-  created_at    DateTime   @default(now())
-  updated_at    DateTime   @default(now())
-  users         users      @relation(fields: [author_id], references: [id], onDelete: Cascade, map: "fk_news_author")
+  created_at    DateTime    @default(now())
+  updated_at    DateTime    @updatedAt
+
+  @@schema("companyprofile")
+}
+
+model categories {
+  id          String   @id @default(uuid()) @db.VarChar(36)
+  name        String   @db.VarChar(100)
+  slug        String   @unique @db.VarChar(100)
+  description String?  @db.VarChar(255)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  news        news[]
 
   @@schema("companyprofile")
 }
 
 model users {
-  id         String   @id @db.VarChar(36)
+  id         String   @id @default(uuid()) @db.VarChar(36)
   email      String   @unique @db.VarChar(255)
   name       String   @db.VarChar(255)
   password   String   @db.VarChar(255)
   role       Role     @default(USER)
   created_at DateTime @default(now())
-  updated_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
   news       news[]
 
   @@schema("companyprofile")
