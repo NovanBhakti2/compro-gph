@@ -6,7 +6,7 @@ const coreServices = [
     title: "Training",
     desc: "The Training service is designed to build internal capabilities and empower teams with the knowledge and skills necessary to sustain operational excellence. Programs are customized based on industry needs – including food safety, quality assurance, hospitality standards, and leadership development.",
     image:
-      "https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1000&auto=format&fit=crop",
+      "/content/bali-3.jpg",
     icon: (
       <svg
         className="w-5 h-5 text-[#C7974C]"
@@ -27,7 +27,7 @@ const coreServices = [
     title: "Consulting",
     desc: "The Consultant service aims to provide strategic and technical guidance to improve overall business performance, quality systems, and sustainability. We work closely with clients to design tailored solutions that align with their goals – from enhancing operational efficiency and customer satisfaction to ensuring regulatory compliance.",
     image:
-      "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1000&auto=format&fit=crop",
+      "/content/consulting.jpg",
     icon: (
       <svg
         className="w-5 h-5 text-[#C7974C]"
@@ -48,7 +48,7 @@ const coreServices = [
     title: "Audit & Evaluation",
     desc: "The Audit service focuses on assessing and verifying compliance with relevant standards, regulations, and internal policies. Through systematic inspections and evaluations, we identify potential gaps and risks in operational processes related to food safety, quality management, and hospitality performance.",
     image:
-      "https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=1000&auto=format&fit=crop",
+      "/content/vimala-pulman.jpg",
     icon: (
       <svg
         className="w-5 h-5 text-[#C7974C]"
@@ -97,7 +97,7 @@ export const CoreServicesSection = () => {
                   src={service.image}
                   alt={service.title}
                   fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 300px"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover transition-transform duration-500 ease-out group-hover:scale-110 group-hover:brightness-105"
                 />
                 <div className="absolute inset-0 bg-[#0f1932]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

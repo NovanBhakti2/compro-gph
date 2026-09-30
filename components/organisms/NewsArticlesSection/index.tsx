@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { DUMMY_NEWS, NewsItem } from "@/data/news";
+import { NewsItem } from "@/data/news";
 import { FadeIn } from "@/components/atoms/animations/FadeIn";
 import { SlideIn } from "@/components/atoms/animations/SlideIn";
 
@@ -10,7 +10,6 @@ interface NewsArticlesSectionProps {
   initialNews?: NewsItem[];
 }
 
-// Helper untuk format tanggal DateTime Prisma ke teks (Contoh: "12 SEP 2026")
 const formatDate = (dateValue?: Date | string | null) => {
   if (!dateValue) return "";
   const date = new Date(dateValue);
@@ -24,12 +23,14 @@ const formatDate = (dateValue?: Date | string | null) => {
 };
 
 export default function NewsArticlesSection({
-  initialNews = DUMMY_NEWS,
+  initialNews = [],
 }: NewsArticlesSectionProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState<number>(1);
 
   const newsList = initialNews.filter((item) => item.status === "PUBLISHED");
+
+  console.log("NewsArticlesSection - initialNews:", initialNews);
 
   if (!newsList || newsList.length === 0) return null;
 
@@ -46,6 +47,18 @@ export default function NewsArticlesSection({
   const handleSelect = (index: number) => {
     setDirection(index > currentIndex ? 1 : -1);
     setCurrentIndex(index);
+  };
+
+  const getFirstParagraph = (htmlContent: string) => {
+    if (!htmlContent) return "";
+
+    const match = htmlContent.match(/<p[^>]*>(.*?)<\/p>/i);
+
+    if (match && match[1]) {
+      return match[1].replace(/<[^>]+>/g, "");
+    }
+
+    return htmlContent.replace(/<[^>]+>/g, "");
   };
 
   const featuredNews = newsList[currentIndex];
@@ -133,7 +146,7 @@ export default function NewsArticlesSection({
                   </h3>
 
                   <p className="text-xs sm:text-sm text-slate-300 leading-relaxed line-clamp-3">
-                    {featuredNews.content}
+                    {getFirstParagraph(featuredNews.content)}
                   </p>
                 </div>
 
@@ -160,45 +173,49 @@ export default function NewsArticlesSection({
             </div>
           </SlideIn>
 
-          <SlideIn
-            activeKey={secondaryNews.id}
-            direction={direction}
-            className="lg:col-span-4"
-          >
-            <Link
-              href={`/news/${secondaryNews.slug}`}
-              className="group relative bg-white rounded-3xl border border-slate-100 p-6 transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between h-full space-y-6 block"
+          {/* Secondary News */}
+          {secondaryNews && (
+            <SlideIn
+              activeKey={secondaryNews.id}
+              direction={direction}
+              className="lg:col-span-4"
             >
-              <div className="space-y-4">
-                <div className="w-full h-48 rounded-2xl overflow-hidden bg-slate-100">
-                  <img
-                    src={
-                      secondaryNews.thumbnail_url ||
-                      "https://placehold.co/600x400?text=No+Image"
-                    }
-                    alt={secondaryNews.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
+              <Link
+                href={`/news/${secondaryNews.slug}`}
+                className="group relative bg-white rounded-3xl border border-slate-100 p-6 transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between h-full space-y-6 block"
+              >
+                <div className="space-y-4">
+                  <div className="w-full h-48 rounded-2xl overflow-hidden bg-slate-100">
+                    <img
+                      src={
+                        secondaryNews.thumbnail_url ||
+                        "https://placehold.co/600x400?text=No+Image"
+                      }
+                      alt={secondaryNews.title}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
 
-                <div className="flex items-center gap-2 text-[11px] font-bold tracking-wider text-slate-400">
-                  <span className="text-[#9c7d42]">NEWS</span>
-                  <span>•</span>
-                  <span>
-                    {formatDate(
-                      secondaryNews.published_at || secondaryNews.created_at,
-                    )}
-                  </span>
-                </div>
+                  <div className="flex items-center gap-2 text-[11px] font-bold tracking-wider text-slate-400">
+                    <span className="text-[#9c7d42]">NEWS</span>
+                    <span>•</span>
+                    <span>
+                      {formatDate(
+                        secondaryNews.published_at || secondaryNews.created_at,
+                      )}
+                    </span>
+                  </div>
 
-                <h4 className="text-lg font-bold text-[#0f1932] leading-snug group-hover:text-[#9c7d42] transition-colors">
-                  {secondaryNews.title}
-                </h4>
-              </div>
-            </Link>
-          </SlideIn>
+                  <h4 className="text-lg font-bold text-[#0f1932] leading-snug group-hover:text-[#9c7d42] transition-colors">
+                    {secondaryNews.title}
+                  </h4>
+                </div>
+              </Link>
+            </SlideIn>
+          )}
         </div>
 
+        {/* Carousel Indicators & Navigation */}
         <FadeIn direction="up" delay={0.2}>
           <div className="flex items-center justify-between pt-4">
             <div className="flex items-center gap-2">

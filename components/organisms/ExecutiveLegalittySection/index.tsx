@@ -2,25 +2,25 @@ import React from "react";
 
 const founders = [
   {
-    name: "Alex Rahardjo",
-    role: "Chief Executive Officer",
-    image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400",
-    bio: "Ex-Director di rantai hotel internasional dengan 12+ tahun pengalaman dalam manajemen operasional dan tata kelola sistem.",
-    linkedin: "#",
+    name: "Hendi Gharnida",
+    role: "Expert in Food Safety, Service Quality & Hospitality Management",
+    image: "/bio/hendi.jpeg",
+    bio: "Food Safety and Quality Management professional with 20+ years of experience in GMP, HACCP, ISO 22000 auditing, and Quality Assurance. Experienced in food safety training, system implementation, and auditing across hospitality, catering, and food industry sectors.",
+    linkedin: "https://www.linkedin.com/in/hendi-gharnida-01268b24/",
   },
   {
-    name: "Siti Nurhaliza",
-    role: "Chief Operating Officer",
-    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400",
-    bio: "Spesialis sertifikasi & standar manufaktur. Berhasil memimpin implementasi sistem audit di 20+ perusahaan multinasional.",
-    linkedin: "#",
+    name: "Dyah Saptorini",
+    role: "Expert in Revenue Analytics, Strategic Planning & Hospitality Management",
+    image: "/bio/dyah.jpeg",
+    bio: "20+ years of experienced in hospitality industry, 10 years in Revenue Management at many international chained hotels. Extensive knowledge of Revenue Management, distribution channels, strong analytical, reporting and strategic planning to meet organizational goal. She received awards for the highest RPI growth at Marriott International and the best score Revenue Management Audit (RM Scoring) at ACCOR.",
+    linkedin: "https://www.linkedin.com/in/dyah-saptorini-64673963/",
   },
   {
-    name: "Budi Santoso",
-    role: "Head of Professional Training",
-    image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=400",
-    bio: "Praktisi pelatihan kepemimpinan dan konsultan keberlanjutan bisnis dengan sertifikasi tingkat global.",
-    linkedin: "#",
+    name: "Muhammad Renandra Ichsansyah",
+    role: "Expert in Food Safety and Service in Quality Hospitality Management",
+    image: "/bio/andra.jpeg",
+    bio: "Hospitality professional with over 15 years of industry experience, specializing in Learning & Development, Food Safety & Hygiene, and Operational Excellence across hospitality brands. Extensive expertise in leadership development, training strategy, organizational capability building, ISO:22000, HACCP and food safety compliance, quality assurance, and performance improvement.",
+    linkedin: "https://www.linkedin.com/in/muhammad-renandra-ichsansyah-20134633/",
   },
 ];
 

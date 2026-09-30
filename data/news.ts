@@ -1,9 +1,9 @@
 export type NewsStatus = "DRAFT" | "PUBLISHED" | "ARCHIVED";
 
-export interface User {
+export interface Category {
   id: string;
   name: string;
-  email?: string;
+  slug: string;
 }
 
 export interface NewsItem {
@@ -11,17 +11,16 @@ export interface NewsItem {
   title: string;
   slug: string;
   content: string;
-  category: string; // Properti Kategori Berita
   thumbnail_url?: string | null;
-  status: NewsStatus;
-  author_id: string;
+  status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
+  category_id?: string | null;
+  categories?: Category | null; // Relasi Prisma ke tabel categories
   published_at?: Date | string | null;
   created_at: Date | string;
   updated_at: Date | string;
-  users?: User;
 }
 
-export const DUMMY_NEWS: NewsItem[] = [
+export const DUMMY_NEWS: any[] = [
   {
     id: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
     title: "Building a Stronger Food Safety Culture Across Hospitality Operations",

@@ -1,19 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import Link from "next/link";
-import { DUMMY_NEWS, NewsItem } from "@/data/news";
+import { NewsItem } from "@/data/news";
 import { FadeIn } from "@/components/atoms/animations/FadeIn";
-
-const categories = [
-  "All Articles",
-  "5S Methodology",
-  "Halal Assurance System",
-  "Food Safety",
-  "Revenue Management",
-  "Quality Assurance",
-  "License & Permits",
-];
 
 const formatDate = (dateValue?: Date | string | null) => {
   if (!dateValue) return "";
@@ -28,19 +18,34 @@ const formatDate = (dateValue?: Date | string | null) => {
 };
 
 export default function CuratedArticlesSection({
-  initialNews = DUMMY_NEWS,
+  initialNews = [],
 }: {
   initialNews?: NewsItem[];
 }) {
   const [selectedCategory, setSelectedCategory] = useState("All Articles");
   const [visibleCount, setVisibleCount] = useState(6);
 
-  const filteredArticles = initialNews.filter((item) => {
-    if (item.status !== "PUBLISHED") return false;
-    if (selectedCategory === "All Articles") return true;
+  const categoriesList = useMemo(() => {
+    const categoryNames = new Set<string>();
+    console.log("CuratedArticlesSection - initialNews:", initialNews);
+    initialNews.forEach((item) => {
+      console.log("item.categories:", item.categories);
+      if (item.categories?.name) {
+        categoryNames.add(item.categories.name);
+      }
+    });
+    return ["All Articles", ...Array.from(categoryNames)];
+  }, [initialNews]);
 
-    return item.category?.toLowerCase() === selectedCategory.toLowerCase();
-  });
+  const filteredArticles = useMemo(() => {
+    return initialNews.filter((item) => {
+      if (item.status !== "PUBLISHED") return false;
+      if (selectedCategory === "All Articles") return true;
+
+      const catName = item.categories?.name || "";
+      return catName.toLowerCase() === selectedCategory.toLowerCase();
+    });
+  }, [initialNews, selectedCategory]);
 
   const visibleArticles = filteredArticles.slice(0, visibleCount);
 
@@ -57,8 +62,23 @@ export default function CuratedArticlesSection({
     setVisibleCount(6);
   };
 
+  const getFirstParagraph = (htmlContent: string) => {
+    if (!htmlContent) return "";
+
+    const match = htmlContent.match(/<p[^>]*>(.*?)<\/p>/i);
+
+    if (match && match[1]) {
+      return match[1].replace(/<[^>]+>/g, "");
+    }
+
+    return htmlContent.replace(/<[^>]+>/g, "");
+  };
+
   return (
-    <section id="curated-articles" className="py-20 px-6 lg:px-20 bg-slate-50/50 border-t border-slate-100">
+    <section
+      id="curated-articles"
+      className="py-20 px-6 lg:px-20 bg-slate-50/50 border-t border-slate-100"
+    >
       <div className="max-w-7xl mx-auto space-y-10">
         <FadeIn direction="up" delay={0.1}>
           <div className="space-y-3">
@@ -80,7 +100,7 @@ export default function CuratedArticlesSection({
 
         <FadeIn direction="up" delay={0.15}>
           <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-            {categories.map((cat) => (
+            {categoriesList.map((cat) => (
               <button
                 key={cat}
                 onClick={() => handleCategoryChange(cat)}
@@ -121,7 +141,7 @@ export default function CuratedArticlesSection({
 
                   <div className="flex items-center gap-2 text-[11px] font-bold tracking-wider text-slate-400">
                     <span className="text-[#9c7d42] uppercase">
-                      {article.category || "FOOD SAFETY"}
+                      {article.categories?.name || "GENERAL"}
                     </span>
                     <span>•</span>
                     <span>
@@ -134,7 +154,7 @@ export default function CuratedArticlesSection({
                   </h3>
 
                   <p className="text-xs text-slate-500 leading-relaxed line-clamp-3">
-                    {article.content}
+                    {getFirstParagraph(article.content)}
                   </p>
                 </div>
 
@@ -159,6 +179,7 @@ export default function CuratedArticlesSection({
           ))}
         </div>
 
+        {/* Tombol Load More / Load Less */}
         {visibleCount < filteredArticles.length ? (
           <FadeIn
             direction="up"
@@ -172,19 +193,21 @@ export default function CuratedArticlesSection({
               Load More Articles
             </button>
           </FadeIn>
-        ) : visibleArticles.length > 6 &&  (
-          <FadeIn
-            direction="up"
-            delay={0.2}
-            className="flex justify-center pt-6"
-          >
-            <button
-              onClick={handleLoadLess}
-              className="px-8 py-3 rounded-full border border-[#0f1932] text-[#0f1932] text-xs font-bold hover:bg-[#0f1932] hover:text-white transition-all duration-300 shadow-sm hover:shadow"
+        ) : (
+          visibleArticles.length > 6 && (
+            <FadeIn
+              direction="up"
+              delay={0.2}
+              className="flex justify-center pt-6"
             >
-              Less Articles
-            </button>
-          </FadeIn>
+              <button
+                onClick={handleLoadLess}
+                className="px-8 py-3 rounded-full border border-[#0f1932] text-[#0f1932] text-xs font-bold hover:bg-[#0f1932] hover:text-white transition-all duration-300 shadow-sm hover:shadow"
+              >
+                Less Articles
+              </button>
+            </FadeIn>
+          )
         )}
       </div>
     </section>

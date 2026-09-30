@@ -156,7 +156,7 @@ export const Navbar: React.FC = () => {
             <NavLink href="/#team" label="Team" />
           </NavbarItem>
           <NavbarItem className="text-white/70 hover:text-[#C7974C]">
-            <NavLink href="/news" label="Articles" />
+            <NavLink href="/news" label="News & Articles" />
           </NavbarItem>
         </NavbarContent>
 
@@ -331,7 +331,7 @@ export const Navbar: React.FC = () => {
                     : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                 }`}
               >
-                <span>Articles</span>
+                <span>News & Articles</span>
                 {pathname === "/news" && (
                   <span className="w-1.5 h-1.5 rounded-full bg-white" />
                 )}

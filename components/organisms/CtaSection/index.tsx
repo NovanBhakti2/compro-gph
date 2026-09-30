@@ -28,7 +28,7 @@ export default function CtaSection() {
         <FadeIn direction="up" delay={0.2}>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
             <Link
-              href="/contact"
+              href="/#contact"
               className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#C7974C] text-white text-xs font-semibold tracking-wide hover:bg-[#b0833e] transition-all shadow-md hover:shadow-lg"
             >
               Schedule a Consultation
