@@ -4,13 +4,13 @@ import CuratedArticlesSection from "@/components/organisms/CuratedArticlesSectio
 import NewsArticlesSection from "@/components/organisms/NewsArticlesSection";
 import { NewsItem } from "@/data/news";
 
-export const revalidate = 60;
+export const revalidate = 0;
 
 async function getNewsData(): Promise<NewsItem[]> {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
     const res = await fetch(`${baseUrl}/api/news`, {
-      next: { revalidate: 60 },
+      next: { revalidate: 0 },
     });
 
     if (!res.ok) {
