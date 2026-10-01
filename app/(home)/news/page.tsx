@@ -5,14 +5,13 @@ import NewsArticlesSection from "@/components/organisms/NewsArticlesSection";
 import { NewsItem } from "@/data/news";
 import { getBaseUrl } from "@/lib/utils";
 
-export const revalidate = 0;
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 async function getNewsData(): Promise<NewsItem[]> {
   try {
     const baseUrl = getBaseUrl();
     const res = await fetch(`${baseUrl}/api/news`, {
-      next: { revalidate: 0 },
+      next: { revalidate: 300 },
     });
 
     if (!res.ok) {

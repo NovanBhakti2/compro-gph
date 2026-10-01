@@ -20,7 +20,8 @@ const founders = [
     role: "Expert in Food Safety and Service in Quality Hospitality Management",
     image: "/bio/andra.jpeg",
     bio: "Hospitality professional with over 15 years of industry experience, specializing in Learning & Development, Food Safety & Hygiene, and Operational Excellence across hospitality brands. Extensive expertise in leadership development, training strategy, organizational capability building, ISO:22000, HACCP and food safety compliance, quality assurance, and performance improvement.",
-    linkedin: "https://www.linkedin.com/in/muhammad-renandra-ichsansyah-20134633/",
+    linkedin:
+      "https://www.linkedin.com/in/muhammad-renandra-ichsansyah-20134633/",
   },
 ];
 
@@ -84,17 +85,18 @@ export const ExecutivesLegalitySection = () => {
           {founders.map((founder, index) => (
             <div
               key={index}
-              className="group relative bg-white rounded-3xl border border-slate-100 p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 flex flex-col justify-between overflow-hidden"
+              className="group relative bg-white rounded-3xl border border-slate-100 p-6 shadow-sm md:hover:shadow-xl transition-all duration-300 md:hover:-translate-y-2 flex flex-col justify-between overflow-hidden"
             >
               <div className="space-y-4">
                 <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-slate-100">
                   <img
                     src={founder.image}
                     alt={founder.name}
-                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
+                    className="w-full h-full object-cover grayscale-0 md:grayscale md:group-hover:grayscale-0 md:group-hover:scale-105 transition-all duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0f1932]/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0f1932]/60 via-transparent to-transparent opacity-0 md:group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
+
                 <div>
                   <span className="text-xs font-semibold text-[#9c7d42] tracking-wider uppercase">
                     {founder.role}
@@ -111,12 +113,9 @@ export const ExecutivesLegalitySection = () => {
               <div className="pt-6 mt-6 border-t border-slate-100 flex items-center justify-between">
                 <a
                   href={founder.linkedin}
-                  className="inline-flex items-center gap-2 text-xs font-semibold text-[#0f1932] group-hover:text-[#C7974C] transition-colors"
+                  className="inline-flex items-center gap-2 text-xs font-semibold text-[#0f1932] md:group-hover:text-[#C7974C] transition-colors"
                 >
-                  <svg
-                    className="w-4 h-4 fill-current"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                     <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.25V10.9H6.46M7.86 6.7a1.62 1.62 0 1 0 0 3.24 1.62 1.62 0 0 0 0-3.24Z" />
                   </svg>
                   Connect on LinkedIn
@@ -127,7 +126,6 @@ export const ExecutivesLegalitySection = () => {
         </div>
       </section>
 
-      {/* Quote Section */}
       <div className="max-w-4xl mx-auto px-6 py-12 lg:px-20 -mt-6">
         <div className="p-6 rounded-2xl bg-white border border-slate-100 shadow-sm text-center">
           <p className="text-xs sm:text-sm italic text-slate-700">
@@ -137,7 +135,6 @@ export const ExecutivesLegalitySection = () => {
         </div>
       </div>
 
-      {/* Company Legality Section */}
       <section className="py-20 px-6 lg:px-20 bg-slate-50/50">
         <div className="max-w-7xl mx-auto space-y-10">
           <div className="text-center space-y-3">
