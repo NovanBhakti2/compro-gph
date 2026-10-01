@@ -43,8 +43,8 @@ export default function CtaSection() {
         </FadeIn>
 
         <FadeIn direction="up" delay={0.3}>
-          <div className="pt-12 grid grid-cols-1 sm:grid-cols-3 gap-6 border-t border-slate-100 max-w-3xl mx-auto">
-            <div className="flex items-center justify-center gap-3 text-left">
+          <div className="pt-12 grid grid-cols-1 sm:grid-cols-3 gap-6 border-t border-slate-100 max-w-3xl mx-auto sm:ml-[100px]">
+            <div className="flex items-center justify-center gap-3 text-left mr-4">
               <div className="w-8 h-8 rounded-full bg-[#C7974C]/10 flex items-center justify-center text-[#C7974C]">
                 <svg
                   className="w-4 h-4"

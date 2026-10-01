@@ -173,12 +173,11 @@ export default function NewsArticlesSection({
             </div>
           </SlideIn>
 
-          {/* Secondary News */}
-          {secondaryNews && (
+          {secondaryNews &&  (
             <SlideIn
               activeKey={secondaryNews.id}
               direction={direction}
-              className="lg:col-span-4"
+              className="hidden lg:block lg:col-span-4"
             >
               <Link
                 href={`/news/${secondaryNews.slug}`}
