@@ -5,15 +5,18 @@ import { put } from "@vercel/blob";
 
 /**
  * Image storage with two backends:
- * - Vercel Blob when BLOB_READ_WRITE_TOKEN is set (production on Vercel).
- *   The token is added automatically when a Blob store is connected to the project.
+ * - Vercel Blob when blob credentials are present (production on Vercel).
+ *   Connecting a store adds BLOB_STORE_ID (+ an auto-rotated OIDC token) and
+ *   sometimes BLOB_READ_WRITE_TOKEN; the SDK picks either up by itself.
+ *   The store must be a *public* store: article images are read by visitors.
  * - Local disk otherwise (development), served by app/uploads/[name]/route.ts.
  */
 export const UPLOAD_DIR = path.join(process.cwd(), "uploads");
 // Vercel Functions reject request bodies above 4.5 MB
 export const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
 
-const isBlobEnabled = () => Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+const isBlobEnabled = () =>
+  Boolean(process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID);
 
 const TYPES = {
   jpg: { mime: "image/jpeg", magic: [[0xff, 0xd8, 0xff]] },
