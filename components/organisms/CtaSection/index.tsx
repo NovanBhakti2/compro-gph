@@ -31,7 +31,7 @@ export default function CtaSection() {
               href="/#contact"
               className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#C7974C] text-white text-xs font-semibold tracking-wide hover:bg-[#b0833e] transition-all shadow-md hover:shadow-lg"
             >
-              Schedule a Consultation
+              Arrange a Consultation
             </Link>
             <Link
               href="/#services"

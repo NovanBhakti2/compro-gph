@@ -52,7 +52,7 @@ export const ExecutivesLegalitySection = () => {
             </span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0f1932] tracking-tight">
-            Our Executives
+            Our Expertises
           </h2>
           <div className="space-y-4 text-slate-600 text-sm sm:text-base leading-relaxed">
             <p>
