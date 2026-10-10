@@ -126,3 +126,24 @@ html {
     outline: 3px solid #c7974c;
   }
 }
+
+/* Hero entrance: plain CSS so it plays on the first paint, without waiting
+   for JavaScript to load (the FadeIn component needs hydration). */
+@keyframes hero-in {
+  from {
+    opacity: 0;
+    transform: translate3d(var(--hero-x, 0), var(--hero-y, 0), 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.hero-in {
+  animation: hero-in 0.6s cubic-bezier(0.21, 0.47, 0.32, 0.98) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-in {
+    animation: none;
+  }
+}

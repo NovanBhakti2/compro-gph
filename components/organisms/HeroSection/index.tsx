@@ -1,6 +1,15 @@
 import React from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { FadeIn } from "@/components/atoms/animations/FadeIn";
+
+// Same offsets as FadeIn's directions, driven by the CSS `.hero-in` animation
+// (app/globals.css) so the hero animates on first paint instead of after JS.
+const heroIn = (x: number, y: number, delay: number) =>
+  ({
+    "--hero-x": `${x}px`,
+    "--hero-y": `${y}px`,
+    animationDelay: `${delay}s`,
+  }) as React.CSSProperties;
 
 export const HeroSection = () => {
   return (
@@ -8,39 +17,43 @@ export const HeroSection = () => {
       id="home"
       className="relative min-h-[90vh] w-full flex items-center bg-[#0f1932] overflow-hidden px-6 lg:px-20 scroll-mt-24"
     >
-      <div
-        className="absolute inset-0 z-0 bg-cover bg-center opacity-25 mix-blend-luminosity"
-        style={{
-          backgroundImage: `url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop')`,
-        }}
+      {/* next/image serves a size that fits the screen instead of a 2070px photo */}
+      <Image
+        src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        quality={60}
+        className="z-0 object-cover opacity-25 mix-blend-luminosity"
       />
       <div className="absolute inset-0 z-0 bg-gradient-to-r from-[#0b1329] via-[#0f1932]/90 to-transparent" />
 
       <div className="relative z-10 max-w-4xl py-20 space-y-6">
-        <FadeIn delay={0.1} direction="down">
+        <div className="hero-in" style={heroIn(0, -30, 0.05)}>
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#C7974C]/40 bg-[#C7974C]/10 backdrop-blur-md">
             <span className="w-1.5 h-1.5 rounded-full bg-[#C7974C]" />
             <span className="text-xs font-medium text-[#C7974C] tracking-wide">
               Professional Consulting & Training
             </span>
           </div>
-        </FadeIn>
+        </div>
 
-        <FadeIn delay={0.1} direction="left">
+        <div className="hero-in" style={heroIn(30, 0, 0.12)}>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-[1.15] tracking-tight">
             Experience the Best of Hospitality, Elevated by Our Commitment to
             Safety & Standards
           </h1>
-        </FadeIn>
+        </div>
 
-        <FadeIn delay={0.1} direction="up">
+        <div className="hero-in" style={heroIn(0, 30, 0.2)}>
           <p className="text-base sm:text-lg text-slate-300 max-w-2xl font-light leading-relaxed">
             Professional consulting and training company helping organizations
             improve performance, compliance, and operational excellence.
           </p>
-        </FadeIn>
+        </div>
 
-        <FadeIn delay={0.1} direction="right">
+        <div className="hero-in" style={heroIn(-30, 0, 0.28)}>
           <div className="flex flex-wrap items-center gap-4 pt-4">
             <Link
               href="#services"
@@ -69,7 +82,7 @@ export const HeroSection = () => {
               Contact Our Team
             </Link>
           </div>
-        </FadeIn>
+        </div>
       </div>
     </section>
   );
