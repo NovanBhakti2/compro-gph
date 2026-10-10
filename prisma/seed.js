@@ -13,8 +13,7 @@ const prisma = new PrismaClient({ adapter });
 
 // Artikel 1: Vimala Pullman Ciawi
 const vimalaArticleContent = `
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start not-prose my-6">
-    <div class="lg:col-span-7 space-y-6 text-slate-600 leading-relaxed text-base">
+  <div class="space-y-6 text-slate-600 leading-relaxed text-base not-prose my-6">
       <p class="text-xl font-bold text-[#0f1932] leading-snug">
         Food safety becomes meaningful when teams can connect standards with the choices they make throughout each working day.
       </p>
@@ -44,50 +43,12 @@ const vimalaArticleContent = `
       <p>
         Ongoing capability building helps make food safety part of the operational rhythm. By reinforcing awareness and encouraging teams to communicate clearly, hospitality organizations can support more dependable practices and a stronger shared commitment to service quality.
       </p>
-    </div>
-
-    <div class="lg:col-span-5">
-      <div class="bg-[#0b1329] text-white p-8 rounded-3xl space-y-6 shadow-lg border border-slate-800">
-        <div>
-          <span class="text-[10px] font-bold tracking-widest text-[#C7974C] uppercase">
-            KEY TOPICS
-          </span>
-          <h3 class="text-2xl font-bold mt-1 text-white leading-snug">
-            What the session reinforced
-          </h3>
-        </div>
-
-        <div class="space-y-6 border-t border-slate-800/80 pt-6">
-          <div class="space-y-1.5">
-            <h4 class="font-bold text-white text-base">Practical awareness</h4>
-            <p class="text-xs text-slate-300 leading-relaxed">
-              Connecting everyday food handling decisions with safe hospitality operations.
-            </p>
-          </div>
-
-          <div class="space-y-1.5">
-            <h4 class="font-bold text-white text-base">Team capability</h4>
-            <p class="text-xs text-slate-300 leading-relaxed">
-              Building shared understanding so teams can apply good practices with confidence.
-            </p>
-          </div>
-
-          <div class="space-y-1.5">
-            <h4 class="font-bold text-white text-base">Operational consistency</h4>
-            <p class="text-xs text-slate-300 leading-relaxed">
-              Reinforcing repeatable routines that support dependable service standards.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 `;
 
 // Artikel 2: Apurva Kempinski Bali (Lengkap dengan Galeri Bawah)
 const kempinskiArticleContent = `
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start not-prose my-6">
-    <div class="lg:col-span-7 space-y-6 text-slate-600 leading-relaxed text-base">
+  <div class="space-y-6 text-slate-600 leading-relaxed text-base not-prose my-6">
       <p class="text-xl font-bold text-[#0f1932] leading-snug">
         Food safety becomes part of service culture when teams can connect practical guidance with the decisions they make throughout each working day.
       </p>
@@ -117,79 +78,6 @@ const kempinskiArticleContent = `
       <p>
         Capability building gives teams opportunities to refresh their knowledge and align around safe ways of working. Reinforcement over time can help food-safety thinking remain visible within the rhythm of hospitality service.
       </p>
-    </div>
-
-    <div class="lg:col-span-5">
-      <div class="bg-[#0b1329] text-white p-8 rounded-3xl space-y-6 shadow-lg border border-slate-800">
-        <div>
-          <span class="text-[10px] font-bold tracking-widest text-[#C7974C] uppercase">
-            KEY TOPICS
-          </span>
-          <h3 class="text-2xl font-bold mt-1 text-white leading-snug">
-            What the session reinforced
-          </h3>
-        </div>
-
-        <div class="space-y-6 border-t border-slate-800/80 pt-6">
-          <div class="space-y-1.5">
-            <h4 class="font-bold text-white text-base">Practical awareness</h4>
-            <p class="text-xs text-slate-300 leading-relaxed">
-              Connecting daily food handling choices with risk prevention.
-            </p>
-          </div>
-
-          <div class="space-y-1.5">
-            <h4 class="font-bold text-white text-base">Team participation</h4>
-            <p class="text-xs text-slate-300 leading-relaxed">
-              Creating space to discuss, question, and reinforce shared practices.
-            </p>
-          </div>
-
-          <div class="space-y-1.5">
-            <h4 class="font-bold text-white text-base">Consistent standards</h4>
-            <p class="text-xs text-slate-300 leading-relaxed">
-              Supporting dependable routines across hospitality operations.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Galeri Foto Dokumentasi Kegiatan (Sesuai Gambar Bagian Bawah) -->
-  <div class="pt-10 border-t border-slate-200/80 space-y-4 not-prose">
-    <div class="space-y-1">
-      <span class="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
-        INSIDE THE WORKSHOP
-      </span>
-      <h3 class="text-2xl font-extrabold text-[#0f1932]">
-        Learning together in Bali
-      </h3>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-      <div class="h-44 rounded-2xl overflow-hidden bg-slate-200 border border-slate-100 shadow-2xs">
-        <img
-          src="/content/bali-1.jpg"
-          alt="Workshop session 1"
-          class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-        />
-      </div>
-      <div class="h-44 rounded-2xl overflow-hidden bg-slate-200 border border-slate-100 shadow-2xs">
-        <img
-          src="/content/bali-2.jpg"
-          alt="Workshop session 2"
-          class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-        />
-      </div>
-      <div class="h-44 rounded-2xl overflow-hidden bg-slate-200 border border-slate-100 shadow-2xs">
-        <img
-          src="/content/bali-3.jpg"
-          alt="Workshop session 3"
-          class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-        />
-      </div>
-    </div>
   </div>
 `;
 
@@ -231,7 +119,24 @@ async function main() {
     {
       title: 'Food Safety Training at Vimala Pullman Ciawi',
       slug: 'food-safety-training-at-vimala-pullman-ciawi',
+      excerpt:
+        'A practical learning session focused on strengthening food-safety awareness, team capability, and consistent hospitality standards in daily operations.',
       content: vimalaArticleContent,
+      key_topics_title: 'What the session reinforced',
+      key_topics: [
+        {
+          "title": "Practical awareness",
+          "description": "Connecting everyday food handling decisions with safe hospitality operations."
+        },
+        {
+          "title": "Team capability",
+          "description": "Building shared understanding so teams can apply good practices with confidence."
+        },
+        {
+          "title": "Operational consistency",
+          "description": "Reinforcing repeatable routines that support dependable service standards."
+        }
+      ],
       thumbnail_url: '/content/vimala-pulman.jpg',
       status: NewsStatus.PUBLISHED,
       published_at: new Date('2026-09-12T10:00:00Z'),
@@ -241,7 +146,31 @@ async function main() {
     {
       title: 'Food Safety Training at Apurva Kempinski Bali',
       slug: 'food-safety-training-at-apurva-kempinski-bali',
+      excerpt:
+        'A practical learning session focused on strengthening food-safety awareness, team capability, and consistent hospitality standards in daily operations.',
       content: kempinskiArticleContent,
+      gallery_label: 'INSIDE THE WORKSHOP',
+      gallery_title: 'Learning together in Bali',
+      gallery: [
+        { url: '/content/bali-1.jpg', alt: 'Workshop session 1' },
+        { url: '/content/bali-2.jpg', alt: 'Workshop session 2' },
+        { url: '/content/bali-3.jpg', alt: 'Workshop session 3' },
+      ],
+      key_topics_title: 'What the session reinforced',
+      key_topics: [
+        {
+          "title": "Practical awareness",
+          "description": "Connecting daily food handling choices with risk prevention."
+        },
+        {
+          "title": "Team participation",
+          "description": "Creating space to discuss, question, and reinforce shared practices."
+        },
+        {
+          "title": "Consistent standards",
+          "description": "Supporting dependable routines across hospitality operations."
+        }
+      ],
       thumbnail_url: '/content/bali-thumbnail.jpg',
       status: NewsStatus.PUBLISHED,
       published_at: new Date('2026-09-20T09:00:00Z'),

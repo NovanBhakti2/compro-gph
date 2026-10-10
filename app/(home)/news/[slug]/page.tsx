@@ -3,6 +3,11 @@ import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { parseKeyTopics } from "@/lib/keyTopics";
+import { KeyTopicsBox } from "@/components/molecules/KeyTopicsBox";
+import { parseGallery } from "@/lib/gallery";
+import { GallerySection } from "@/components/molecules/GallerySection";
+import { formatArticleDate } from "@/lib/articleDate";
 
 interface PageProps {
   params: Promise<{
@@ -28,6 +33,9 @@ export default async function NewsDetailPage({ params }: PageProps) {
   if (!article || article.status !== "PUBLISHED") {
     notFound();
   }
+
+  const keyTopics = parseKeyTopics(article.key_topics);
+  const gallery = parseGallery(article.gallery);
 
   const relatedArticles = await prisma.news.findMany({
     where: {
@@ -66,22 +74,30 @@ export default async function NewsDetailPage({ params }: PageProps) {
         </nav>
 
         <header className="space-y-4 max-w-4xl">
-          <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#C7974C]/50 bg-[#C7974C]/10">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#C7974C]" />
-            <span className="text-xs font-semibold text-[#9c7d42] tracking-wide">
-              {article.categories?.name || "Training Recap"}
-            </span>
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#C7974C]/50 bg-[#C7974C]/10">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#C7974C]" />
+              <span className="text-xs font-semibold text-[#9c7d42] tracking-wide">
+                {article.categories?.name || "Training Recap"}
+              </span>
+            </div>
+            <time
+              dateTime={(article.published_at ?? article.created_at).toISOString()}
+              className="text-xs font-semibold text-slate-400"
+            >
+              {formatArticleDate(article.published_at ?? article.created_at)}
+            </time>
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-extrabold text-[#0f1932] tracking-tight leading-[1.15]">
             {article.title}
           </h1>
 
-          <p className="text-sm sm:text-base text-slate-500 leading-relaxed font-normal">
-            A practical learning session focused on strengthening food-safety
-            awareness, team capability, and consistent hospitality standards in
-            daily operations.
-          </p>
+          {article.excerpt && (
+            <p className="text-sm sm:text-base text-slate-500 leading-relaxed font-normal">
+              {article.excerpt}
+            </p>
+          )}
         </header>
 
         {article.thumbnail_url && (
@@ -94,12 +110,31 @@ export default async function NewsDetailPage({ params }: PageProps) {
           </div>
         )}
 
-        <div className="pt-4">
+        <div
+          className={
+            keyTopics.length
+              ? "pt-4 grid grid-cols-1 lg:grid-cols-12 gap-10 items-start"
+              : "pt-4"
+          }
+        >
           <div
-            className="prose max-w-none prose-slate"
+            className={`article-content ${keyTopics.length ? "lg:col-span-7" : ""}`}
             dangerouslySetInnerHTML={{ __html: article.content }}
           />
+          {keyTopics.length > 0 && (
+            <aside className="lg:col-span-5 lg:sticky lg:top-28">
+              <KeyTopicsBox title={article.key_topics_title} topics={keyTopics} />
+            </aside>
+          )}
         </div>
+
+        {gallery.length > 0 && (
+          <GallerySection
+            label={article.gallery_label}
+            title={article.gallery_title}
+            images={gallery}
+          />
+        )}
 
         {relatedArticles.length > 0 && (
           <section className="pt-16 border-t border-slate-200/80 space-y-6">

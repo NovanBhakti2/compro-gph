@@ -146,7 +146,7 @@ export default function NewsArticlesSection({
                   </h3>
 
                   <p className="text-xs sm:text-sm text-slate-300 leading-relaxed line-clamp-3">
-                    {getFirstParagraph(featuredNews.content)}
+                    {featuredNews.excerpt || getFirstParagraph(featuredNews.content)}
                   </p>
                 </div>
 

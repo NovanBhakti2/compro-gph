@@ -3,23 +3,17 @@ import CtaSection from "@/components/organisms/CtaSection";
 import CuratedArticlesSection from "@/components/organisms/CuratedArticlesSection";
 import NewsArticlesSection from "@/components/organisms/NewsArticlesSection";
 import { NewsItem } from "@/data/news";
-import { getBaseUrl } from "@/lib/utils";
+import { getPublishedNews } from "@/lib/news";
 
+// Dashboard actions call revalidatePath("/news"), so edits show up right away;
+// this is only the fallback refresh interval.
 export const revalidate = 300;
 
 async function getNewsData(): Promise<NewsItem[]> {
+  // Query the database directly instead of fetching our own /api/news over
+  // HTTP, which fails during the build when the site isn't deployed yet.
   try {
-    const baseUrl = getBaseUrl();
-    const res = await fetch(`${baseUrl}/api/news`, {
-      next: { revalidate: 300 },
-    });
-
-    if (!res.ok) {
-      throw new Error("Gagal mengambil data dari API");
-    }
-
-    const responseData = await res.json();
-    return responseData.data || [];
+    return await getPublishedNews();
   } catch (error) {
     console.error("Error fetching news in NewsPage:", error);
     return [];
@@ -28,7 +22,6 @@ async function getNewsData(): Promise<NewsItem[]> {
 
 export default async function NewsPage() {
   const newsList = await getNewsData();
-  console.log("NewsPage - newsList:", newsList);
 
   return (
     <main>

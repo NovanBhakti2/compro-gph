@@ -12,9 +12,20 @@ model news {
   id            String      @id @default(uuid()) @db.VarChar(36)
   title         String      @db.VarChar(255)
   slug          String      @unique @db.VarChar(255)
+  // Kalimat ringkasan di bawah judul artikel & di kartu berita
+  excerpt       String?     @db.VarChar(500)
   content       String
   thumbnail_url String?     @db.VarChar(500)
   status        NewsStatus  @default(DRAFT)
+
+  // Kotak "Key Topics" di samping konten. key_topics: [{ title, description }]
+  key_topics_title String? @db.VarChar(255)
+  key_topics       Json?
+
+  // Galeri foto di bawah konten. gallery: [{ url, alt }]
+  gallery_label    String?  @db.VarChar(100)
+  gallery_title    String?  @db.VarChar(255)
+  gallery          Json?
 
   author_id     String      @db.VarChar(36)
   users         users       @relation(fields: [author_id], references: [id], onDelete: Cascade, map: "fk_news_author")
