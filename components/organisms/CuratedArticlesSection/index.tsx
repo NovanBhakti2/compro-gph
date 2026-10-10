@@ -154,7 +154,7 @@ export default function CuratedArticlesSection({
                   </h3>
 
                   <p className="text-xs text-slate-500 leading-relaxed line-clamp-3">
-                    {getFirstParagraph(article.content)}
+                    {article.excerpt || getFirstParagraph(article.content)}
                   </p>
                 </div>
 

@@ -10,6 +10,7 @@ export interface NewsItem {
   id: string;
   title: string;
   slug: string;
+  excerpt?: string | null;
   content: string;
   thumbnail_url?: string | null;
   status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
