@@ -1,13 +1,13 @@
 import type { KeyTopic } from "@/lib/keyTopics";
 
-type Props = { title?: string | null; topics: KeyTopic[] };
+type Props = { title?: string | null; topics: KeyTopic[]; label?: string };
 
-export function KeyTopicsBox({ title, topics }: Props) {
+export function KeyTopicsBox({ title, topics, label = "KEY TOPICS" }: Props) {
   return (
     <div className="bg-[#0b1329] text-white p-8 rounded-3xl space-y-6 shadow-lg border border-slate-800">
       <div>
         <span className="text-[10px] font-bold tracking-widest text-[#C7974C] uppercase">
-          KEY TOPICS
+          {label}
         </span>
         {title && (
           <h3 className="text-2xl font-bold mt-1 text-white leading-snug">{title}</h3>

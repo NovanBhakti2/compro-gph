@@ -1,8 +1,9 @@
 import React from "react";
 import Image from "next/image";
 import { FadeIn } from "@/components/atoms/animations/FadeIn";
+import type { Dictionary } from "@/lib/i18n/dictionaries/en";
 
-export const AboutSection = () => {
+export const AboutSection = ({ dict }: { dict: Dictionary["about"] }) => {
   return (
     <section id="about" className="py-24 px-6 lg:px-20 bg-white scroll-mt-24">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
@@ -11,7 +12,7 @@ export const AboutSection = () => {
             <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#C7974C]/50 bg-[#C7974C]/10">
               <span className="w-1.5 h-1.5 rounded-full bg-[#C7974C]" />
               <span className="text-xs font-semibold text-[#9c7d42] tracking-wide">
-                About The Company
+                {dict.badge}
               </span>
             </div>
 
@@ -20,16 +21,9 @@ export const AboutSection = () => {
             </h2>
 
             <div className="space-y-4 text-slate-600 text-base leading-relaxed">
-              <p>
-                PT. Gama Putra Harmoni is a professional consulting and training
-                company committed to helping organizations improve performance,
-                compliance, and operational excellence.
-              </p>
-              <p>
-                We specialize in hospitality, food safety, and quality
-                management systems — offering expert guidance and tailored
-                solutions that deliver tangible results and sustainable growth.
-              </p>
+              {dict.paragraphs.map((text) => (
+                <p key={text}>{text}</p>
+              ))}
             </div>
           </div>
         </FadeIn>
@@ -38,7 +32,7 @@ export const AboutSection = () => {
           <div className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border border-slate-100">
             <Image
               src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop"
-              alt="PT Gama Putra Harmoni Meeting"
+              alt={dict.imageAlt}
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 50vw"

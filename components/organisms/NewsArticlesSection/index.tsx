@@ -5,16 +5,21 @@ import Link from "next/link";
 import { NewsItem } from "@/data/news";
 import { FadeIn } from "@/components/atoms/animations/FadeIn";
 import { SlideIn } from "@/components/atoms/animations/SlideIn";
+import type { Dictionary } from "@/lib/i18n/dictionaries/en";
+import { localizePath, type Locale } from "@/lib/i18n/config";
 
 interface NewsArticlesSectionProps {
   initialNews?: NewsItem[];
+  lang: Locale;
+  dict: Dictionary["news"];
+  dateLocale: string;
 }
 
-const formatDate = (dateValue?: Date | string | null) => {
+const formatDate = (dateValue: Date | string | null | undefined, locale: string) => {
   if (!dateValue) return "";
   const date = new Date(dateValue);
   return date
-    .toLocaleDateString("en-GB", {
+    .toLocaleDateString(locale, {
       day: "2-digit",
       month: "short",
       year: "numeric",
@@ -24,13 +29,14 @@ const formatDate = (dateValue?: Date | string | null) => {
 
 export default function NewsArticlesSection({
   initialNews = [],
+  lang,
+  dict,
+  dateLocale,
 }: NewsArticlesSectionProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState<number>(1);
 
   const newsList = initialNews.filter((item) => item.status === "PUBLISHED");
-
-  console.log("NewsArticlesSection - initialNews:", initialNews);
 
   if (!newsList || newsList.length === 0) return null;
 
@@ -73,23 +79,22 @@ export default function NewsArticlesSection({
               <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#C7974C]/50 bg-[#C7974C]/10">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#C7974C]" />
                 <span className="text-xs font-semibold text-[#9c7d42] tracking-wide">
-                  Insights & Updates
+                  {dict.badge}
                 </span>
               </div>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0f1932] tracking-tight">
-                News & Articles
+                {dict.title}
               </h2>
               <p className="text-sm sm:text-base text-slate-500 max-w-xl">
-                Stay updated with our latest activities, insights, and
-                professional expertise.
+                {dict.subtitle}
               </p>
             </div>
 
             <Link
-              href="/news/#curated-articles"
+              href={localizePath(lang, "/news#curated-articles")}
               className="inline-flex items-center gap-2 text-xs font-semibold text-slate-700 hover:text-[#C7974C] transition-colors group self-start md:self-auto"
             >
-              <span>View all articles</span>
+              <span>{dict.viewAll}</span>
               <svg
                 className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
                 fill="none"
@@ -128,17 +133,18 @@ export default function NewsArticlesSection({
               <div className="md:w-1/2 p-8 sm:p-10 flex flex-col justify-between text-white space-y-6">
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 text-[11px] font-bold tracking-wider text-slate-300">
-                    <span className="text-[#C7974C]">NEWS</span>
+                    <span className="text-[#C7974C]">{dict.label}</span>
                     <span>•</span>
                     <span>
                       {formatDate(
                         featuredNews.published_at || featuredNews.created_at,
+                        dateLocale,
                       )}
                     </span>
                   </div>
 
                   <div className="inline-block px-2.5 py-0.5 rounded bg-white/10 text-[10px] font-semibold tracking-wider text-slate-300 uppercase">
-                    Featured Insight
+                    {dict.featured}
                   </div>
 
                   <h3 className="text-2xl font-bold leading-tight group-hover:text-[#C7974C] transition-colors">
@@ -151,10 +157,10 @@ export default function NewsArticlesSection({
                 </div>
 
                 <Link
-                  href={`/news/${featuredNews.slug}`}
+                  href={localizePath(lang, `/news/${featuredNews.slug}`)}
                   className="inline-flex items-center gap-2 text-xs font-semibold text-white hover:text-[#C7974C] transition-colors group/btn pt-2"
                 >
-                  <span>Read article</span>
+                  <span>{dict.readArticle}</span>
                   <svg
                     className="w-4 h-4 transition-transform duration-300 group-hover/btn:translate-x-1"
                     fill="none"
@@ -180,7 +186,7 @@ export default function NewsArticlesSection({
               className="hidden lg:block lg:col-span-4"
             >
               <Link
-                href={`/news/${secondaryNews.slug}`}
+                href={localizePath(lang, `/news/${secondaryNews.slug}`)}
                 className="group relative bg-white rounded-3xl border border-slate-100 p-6 transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between h-full space-y-6 block"
               >
                 <div className="space-y-4">
@@ -196,11 +202,12 @@ export default function NewsArticlesSection({
                   </div>
 
                   <div className="flex items-center gap-2 text-[11px] font-bold tracking-wider text-slate-400">
-                    <span className="text-[#9c7d42]">NEWS</span>
+                    <span className="text-[#9c7d42]">{dict.label}</span>
                     <span>•</span>
                     <span>
                       {formatDate(
                         secondaryNews.published_at || secondaryNews.created_at,
+                        dateLocale,
                       )}
                     </span>
                   </div>
@@ -234,6 +241,7 @@ export default function NewsArticlesSection({
             <div className="flex items-center gap-3">
               <button
                 onClick={handlePrev}
+                aria-label={dict.previous}
                 className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-100 transition-colors active:scale-90"
               >
                 <svg
@@ -252,6 +260,7 @@ export default function NewsArticlesSection({
               </button>
               <button
                 onClick={handleNext}
+                aria-label={dict.next}
                 className="w-10 h-10 rounded-full bg-[#0f1932] text-white flex items-center justify-center hover:bg-[#C7974C] transition-colors active:scale-90 shadow-sm"
               >
                 <svg

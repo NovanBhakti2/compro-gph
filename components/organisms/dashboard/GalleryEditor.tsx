@@ -12,6 +12,10 @@ type Props = {
   onLabelChange: (value: string) => void;
   onTitleChange: (value: string) => void;
   onImagesChange: (update: (images: GalleryImage[]) => GalleryImage[]) => void;
+  /** Appended to the label/title field names, e.g. "_id" for Indonesian */
+  nameSuffix?: string;
+  /** Only the label/title fields (the photos are shared between languages) */
+  textOnly?: boolean;
 };
 
 const overlayButton =
@@ -24,6 +28,8 @@ export function GalleryEditor({
   onLabelChange,
   onTitleChange,
   onImagesChange,
+  nameSuffix = "",
+  textOnly = false,
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState<{ done: number; total: number } | null>(null);
@@ -61,20 +67,20 @@ export function GalleryEditor({
   return (
     <div className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Label kecil" htmlFor="gallery_label">
+        <Field label="Label kecil" htmlFor={`gallery_label${nameSuffix}`}>
           <input
-            id="gallery_label"
-            name="gallery_label"
+            id={`gallery_label${nameSuffix}`}
+            name={`gallery_label${nameSuffix}`}
             value={label}
             onChange={(e) => onLabelChange(e.target.value)}
             placeholder="INSIDE THE WORKSHOP"
             className={inputClass}
           />
         </Field>
-        <Field label="Judul galeri" htmlFor="gallery_title">
+        <Field label="Judul galeri" htmlFor={`gallery_title${nameSuffix}`}>
           <input
-            id="gallery_title"
-            name="gallery_title"
+            id={`gallery_title${nameSuffix}`}
+            name={`gallery_title${nameSuffix}`}
             value={title}
             onChange={(e) => onTitleChange(e.target.value)}
             placeholder="Learning together in Bali"
@@ -83,7 +89,7 @@ export function GalleryEditor({
         </Field>
       </div>
 
-      {images.length > 0 && (
+      {!textOnly && images.length > 0 && (
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {images.map((image, i) => (
             <li
@@ -134,6 +140,8 @@ export function GalleryEditor({
         </ul>
       )}
 
+      {!textOnly && (
+      <>
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
@@ -174,6 +182,8 @@ export function GalleryEditor({
         className="hidden"
         onChange={(e) => uploadFiles(Array.from(e.target.files ?? []))}
       />
+      </>
+      )}
 
       {errors.length > 0 && (
         <ul className="space-y-0.5 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-600">

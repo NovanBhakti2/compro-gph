@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { stripLocale } from '@/lib/i18n/config';
 
 interface NavLinkProps {
   href: string;
@@ -11,7 +12,7 @@ interface NavLinkProps {
 
 export const NavLink: React.FC<NavLinkProps> = ({ href, label }) => {
   const pathname = usePathname();
-  const isActive = pathname === href;
+  const isActive = stripLocale(pathname) === stripLocale(href);
 
   return (
     <Link

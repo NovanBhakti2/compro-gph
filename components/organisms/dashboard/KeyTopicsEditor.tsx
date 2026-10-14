@@ -9,9 +9,18 @@ type Props = {
   onTitleChange: (value: string) => void;
   onTopicsChange: (update: (topics: KeyTopic[]) => KeyTopic[]) => void;
   titleError?: string[];
+  /** Appended to field names/ids, e.g. "_id" for the Indonesian version */
+  nameSuffix?: string;
 };
 
-export function KeyTopicsEditor({ title, topics, onTitleChange, onTopicsChange, titleError }: Props) {
+export function KeyTopicsEditor({
+  title,
+  topics,
+  onTitleChange,
+  onTopicsChange,
+  titleError,
+  nameSuffix = "",
+}: Props) {
   const update = (index: number, patch: Partial<KeyTopic>) =>
     onTopicsChange((list) => list.map((t, i) => (i === index ? { ...t, ...patch } : t)));
 
@@ -25,10 +34,10 @@ export function KeyTopicsEditor({ title, topics, onTitleChange, onTopicsChange, 
 
   return (
     <div className="space-y-4">
-      <Field label="Judul kotak" htmlFor="key_topics_title" error={titleError}>
+      <Field label="Judul kotak" htmlFor={`key_topics_title${nameSuffix}`} error={titleError}>
         <input
-          id="key_topics_title"
-          name="key_topics_title"
+          id={`key_topics_title${nameSuffix}`}
+          name={`key_topics_title${nameSuffix}`}
           value={title}
           onChange={(e) => onTitleChange(e.target.value)}
           className={inputClass}
@@ -48,7 +57,7 @@ export function KeyTopicsEditor({ title, topics, onTitleChange, onTopicsChange, 
               </span>
               <div className="min-w-0 flex-1 space-y-2">
                 <input
-                  name="key_topic_title"
+                  name={`key_topic_title${nameSuffix}`}
                   value={topic.title}
                   onChange={(e) => update(i, { title: e.target.value })}
                   aria-label={`Judul poin ${i + 1}`}
@@ -56,7 +65,7 @@ export function KeyTopicsEditor({ title, topics, onTitleChange, onTopicsChange, 
                   className={`${inputClass} font-semibold`}
                 />
                 <textarea
-                  name="key_topic_description"
+                  name={`key_topic_description${nameSuffix}`}
                   value={topic.description}
                   onChange={(e) => update(i, { description: e.target.value })}
                   aria-label={`Deskripsi poin ${i + 1}`}

@@ -1,46 +1,43 @@
 import React from "react";
+import type { Dictionary } from "@/lib/i18n/dictionaries/en";
 
-const founders = [
+// role/bio per founder come from dict.team.founders (same order)
+const founderProfiles = [
   {
     name: "Hendi Gharnida",
-    role: "Expert in Food Safety, Service Quality & Hospitality Management",
     image: "/bio/hendi.jpeg",
-    bio: "Food Safety and Quality Management professional with 20+ years of experience in GMP, HACCP, ISO 22000 auditing, and Quality Assurance. Experienced in food safety training, system implementation, and auditing across hospitality, catering, and food industry sectors.",
     linkedin: "https://www.linkedin.com/in/hendi-gharnida-01268b24/",
   },
   {
     name: "Dyah Saptorini",
-    role: "Expert in Revenue Analytics, Strategic Planning & Hospitality Management",
     image: "/bio/dyah.jpeg",
-    bio: "20+ years of experienced in hospitality industry, 10 years in Revenue Management at many international chained hotels. Extensive knowledge of Revenue Management, distribution channels, strong analytical, reporting and strategic planning to meet organizational goal. She received awards for the highest RPI growth at Marriott International and the best score Revenue Management Audit (RM Scoring) at ACCOR.",
     linkedin: "https://www.linkedin.com/in/dyah-saptorini-64673963/",
   },
   {
     name: "Muhammad Renandra Ichsansyah",
-    role: "Expert in Food Safety and Service in Quality Hospitality Management",
     image: "/bio/andra.jpeg",
-    bio: "Hospitality professional with over 15 years of industry experience, specializing in Learning & Development, Food Safety & Hygiene, and Operational Excellence across hospitality brands. Extensive expertise in leadership development, training strategy, organizational capability building, ISO:22000, HACCP and food safety compliance, quality assurance, and performance improvement.",
     linkedin:
       "https://www.linkedin.com/in/muhammad-renandra-ichsansyah-20134633/",
   },
 ];
 
-const legalities = [
+// Labels come from dict.team.legalities (same order)
+const legalityNumbers = [
   {
-    label: "Deed of Establishment",
     number: "No. 308, 18 September 2025",
   },
   {
-    label: "Ministry of Law & Human Rights Approval",
     number: "No. AHU-0082606.AH.01.01.Tahun 2025",
   },
   {
-    label: "Business Identification Number (NIB)",
     number: "No. 2310250110293",
   },
 ];
 
-export const ExecutivesLegalitySection = () => {
+export const ExecutivesLegalitySection = ({ dict }: { dict: Dictionary["team"] }) => {
+  const founders = founderProfiles.map((f, i) => ({ ...f, ...dict.founders[i] }));
+  const legalities = legalityNumbers.map((l, i) => ({ ...l, label: dict.legalities[i] }));
+
   return (
     <div id="team" className="scroll-mt-24">
       <section className="py-24 px-6 lg:px-20 bg-white">
@@ -48,34 +45,16 @@ export const ExecutivesLegalitySection = () => {
           <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#C7974C]/50 bg-[#C7974C]/10">
             <span className="w-1.5 h-1.5 rounded-full bg-[#C7974C]" />
             <span className="text-xs font-semibold text-[#9c7d42] tracking-wide">
-              Leadership & Expertise
+              {dict.badge}
             </span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0f1932] tracking-tight">
-            Our Expertises
+            {dict.title}
           </h2>
           <div className="space-y-4 text-slate-600 text-sm sm:text-base leading-relaxed">
-            <p>
-              Our team of consultants collectively bring over 20 years of
-              extensive experience across the hospitality, manufacturing,
-              certification, and professional training industries.
-            </p>
-            <p>
-              With a strong foundation built through years of service in
-              international hotel chains and multinational corporations, our
-              consultants possess a deep understanding of global standards,
-              operational excellence, and business sustainability. Each member
-              of our team has contributed to the success of leading
-              organizations by implementing effective management systems,
-              enhancing service quality, and driving continuous improvement
-              across diverse sectors.
-            </p>
-            <p>
-              This wealth of cross-industry experience enables us to deliver
-              strategic, practical, and impactful solutions that support our
-              clients in achieving operational excellence and sustainable
-              business growth.
-            </p>
+            {dict.paragraphs.map((text) => (
+              <p key={text}>{text}</p>
+            ))}
           </div>
         </div>
       </section>
@@ -118,7 +97,7 @@ export const ExecutivesLegalitySection = () => {
                   <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                     <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.25V10.9H6.46M7.86 6.7a1.62 1.62 0 1 0 0 3.24 1.62 1.62 0 0 0 0-3.24Z" />
                   </svg>
-                  Connect on LinkedIn
+                  {dict.connect}
                 </a>
               </div>
             </div>
@@ -129,8 +108,7 @@ export const ExecutivesLegalitySection = () => {
       <div className="max-w-4xl mx-auto px-6 py-12 lg:px-20 -mt-6">
         <div className="p-6 rounded-2xl bg-white border border-slate-100 shadow-sm text-center">
           <p className="text-xs sm:text-sm italic text-slate-700">
-            &ldquo;Excellence is not a singular act, but a habit of continuous
-            training and systems compliance.&rdquo;
+            &ldquo;{dict.quote}&rdquo;
           </p>
         </div>
       </div>
@@ -141,11 +119,11 @@ export const ExecutivesLegalitySection = () => {
             <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#C7974C]/50 bg-[#C7974C]/10">
               <span className="w-1.5 h-1.5 rounded-full bg-[#C7974C]" />
               <span className="text-xs font-semibold text-[#9c7d42] tracking-wide">
-                Corporate Integrity
+                {dict.legalityBadge}
               </span>
             </div>
             <h2 className="text-3xl font-extrabold text-[#0f1932] tracking-tight">
-              Company Legality
+              {dict.legalityTitle}
             </h2>
           </div>
 

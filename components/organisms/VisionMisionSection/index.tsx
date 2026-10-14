@@ -2,8 +2,9 @@
 
 import { FadeIn } from "@/components/atoms/animations/FadeIn";
 import React, { useState } from "react";
+import type { Dictionary } from "@/lib/i18n/dictionaries/en";
 
-export const VisionMissionSection = () => {
+export const VisionMissionSection = ({ dict }: { dict: Dictionary["vision"] }) => {
   // Default awal aktif di 'mission' agar salah satu kartu langsung bertema gelap
   const [activeCard, setActiveCard] = useState<"mission" | "vision">("mission");
 
@@ -19,13 +20,13 @@ export const VisionMissionSection = () => {
             <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#C7974C]/50 bg-[#C7974C]/10">
               <span className="w-1.5 h-1.5 rounded-full bg-[#C7974C]" />
               <span className="text-xs font-semibold text-[#9c7d42] tracking-wide">
-                Our Foundation
+                {dict.badge}
               </span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0f1932] tracking-tight">
-              Driving Standards of
+              {dict.titleLine1}
               <br />
-              Excellence
+              {dict.titleLine2}
             </h2>
           </div>
         </FadeIn>
@@ -78,15 +79,14 @@ export const VisionMissionSection = () => {
                     activeCard === "mission" ? "text-white" : "text-[#0f1932]"
                   }`}
                 >
-                  Our Mission
+                  {dict.mission}
                 </h3>
                 <p
                   className={`text-sm sm:text-base leading-relaxed transition-colors duration-500 ${
                     activeCard === "mission" ? "text-slate-300" : "text-slate-600"
                   }`}
                 >
-                  Becoming the most preferred partner in building a culture that
-                  values quality, safety, and sustainability.
+                  {dict.missionText}
                 </p>
               </div>
             </div>
@@ -135,15 +135,14 @@ export const VisionMissionSection = () => {
                     activeCard === "vision" ? "text-white" : "text-[#0f1932]"
                   }`}
                 >
-                  Our Vision
+                  {dict.vision}
                 </h3>
                 <p
                   className={`text-sm sm:text-base leading-relaxed transition-colors duration-500 ${
                     activeCard === "vision" ? "text-slate-300" : "text-slate-600"
                   }`}
                 >
-                  To enhance business performance and integrity through
-                  impactful training and consultancy.
+                  {dict.visionText}
                 </p>
               </div>
             </div>

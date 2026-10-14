@@ -17,9 +17,9 @@ export function fromDateInputValue(value: string) {
   return toDateInputValue(date) === value ? date : null;
 }
 
-/** "12 September 2026" */
-export function formatArticleDate(date: Date | string) {
-  return new Intl.DateTimeFormat("en-GB", {
+/** "12 September 2026" (en-GB) / "12 September 2026" (id-ID) */
+export function formatArticleDate(date: Date | string, locale = "en-GB") {
+  return new Intl.DateTimeFormat(locale, {
     day: "numeric",
     month: "long",
     year: "numeric",

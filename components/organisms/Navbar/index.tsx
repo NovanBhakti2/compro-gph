@@ -11,6 +11,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import NavLink from "@/components/molecules/Navlink";
 import Image from "next/image";
+import type { Dictionary } from "@/lib/i18n/dictionaries/en";
+import { localizePath, stripLocale, type Locale } from "@/lib/i18n/config";
 
 const serviceItems = [
   { label: "Hospitality Consulting", href: "/services/hospitality" },
@@ -19,11 +21,48 @@ const serviceItems = [
   { label: "In-House Training", href: "/services/training" },
 ];
 
-export const Navbar: React.FC = () => {
+type NavbarProps = { lang: Locale; dict: Dictionary["nav"] };
+
+/** EN | ID switch that keeps the visitor on the same page. */
+function LanguageSwitch({ lang, label, dark }: { lang: Locale; label: string; dark?: boolean }) {
+  const pathname = usePathname();
+  const basePath = stripLocale(pathname);
+  return (
+    <div
+      role="group"
+      aria-label={label}
+      className={`inline-flex items-center rounded-full p-0.5 text-[11px] font-bold ${
+        dark ? "bg-white/10" : "bg-slate-100"
+      }`}
+    >
+      {(["en", "id"] as const).map((l) => (
+        <Link
+          key={l}
+          href={localizePath(l, basePath)}
+          hrefLang={l}
+          aria-current={l === lang ? "true" : undefined}
+          className={`rounded-full px-2.5 py-1 uppercase transition-colors ${
+            l === lang
+              ? "bg-[#C7974C] text-white"
+              : dark
+                ? "text-white/70 hover:text-white"
+                : "text-slate-500 hover:text-slate-800"
+          }`}
+        >
+          {l}
+        </Link>
+      ))}
+    </div>
+  );
+}
+
+export const Navbar: React.FC<NavbarProps> = ({ lang, dict }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isServiceDropdownOpen, setIsServiceDropdownOpen] = useState(false);
   const [isMobileServiceOpen, setIsMobileServiceOpen] = useState(false);
-  const pathname = usePathname();
+  // Compare against the unprefixed path so /id/news counts as "news"
+  const pathname = stripLocale(usePathname());
+  const href = (path: string) => localizePath(lang, path);
 
   useEffect(() => {
     const handleResize = () => {
@@ -48,7 +87,7 @@ export const Navbar: React.FC = () => {
         <NavbarContent className="gap-3">
           <button
             type="button"
-            aria-label="Buka Menu"
+            aria-label={dict.openMenu}
             onClick={() => setIsSidebarOpen(true)}
             className="sm:hidden p-2 -ml-2 rounded-xl text-white/70 hover:text-white hover:bg-white/10 active:scale-95 transition"
           >
@@ -68,7 +107,7 @@ export const Navbar: React.FC = () => {
           </button>
 
           <NavbarBrand>
-            <Link href="/" className="flex items-center gap-3 group">
+            <Link href={href("/")} className="flex items-center gap-3 group">
               <div className="w-10 h-10 rounded-xl bg-transparent p-0.5 overflow-hidden flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
                 <Image
                   src="/gph-logo.png"
@@ -93,10 +132,10 @@ export const Navbar: React.FC = () => {
 
         <NavbarContent className="hidden sm:flex gap-6" justify="center">
           <NavbarItem className="text-white/70 hover:text-[#C7974C]">
-            <NavLink href="/#home" label="Home" />
+            <NavLink href={href("/#home")} label={dict.home} />
           </NavbarItem>
           <NavbarItem className="text-white/70 hover:text-[#C7974C]">
-            <NavLink href="/#about" label="About" />
+            <NavLink href={href("/#about")} label={dict.about} />
           </NavbarItem>
 
           {/* <NavbarItem
@@ -153,21 +192,24 @@ export const Navbar: React.FC = () => {
           </NavbarItem> */}
 
           <NavbarItem className="text-white/70 hover:text-[#C7974C]">
-            <NavLink href="/#team" label="Team" />
+            <NavLink href={href("/#team")} label={dict.team} />
           </NavbarItem>
           <NavbarItem className="text-white/70 hover:text-[#C7974C]">
-            <NavLink href="/news" label="News & Articles" />
+            <NavLink href={href("/news")} label={dict.news} />
           </NavbarItem>
         </NavbarContent>
 
         {!isSidebarOpen && (
           <NavbarContent justify="end" className="gap-3">
+            <NavbarItem className="flex">
+              <LanguageSwitch lang={lang} label={dict.switchLanguage} dark />
+            </NavbarItem>
             <NavbarItem className="hidden sm:flex">
               <Link
-                href="/#contact"
+                href={href("/#contact")}
                 className="inline-flex items-center justify-center text-sm font-semibold px-4 py-2 rounded-xl text-white bg-gradient-to-r from-[#C7974C] to-[#a88c5a] hover:from-[#d4b88a] hover:to-[#b89c6a] shadow-md shadow-[#C7974C]/20 hover:shadow-[#C7974C]/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
               >
-                Get in Touch
+                {dict.getInTouch}
               </Link>
             </NavbarItem>
           </NavbarContent>
@@ -209,6 +251,7 @@ export const Navbar: React.FC = () => {
               </div>
               <button
                 type="button"
+                aria-label={dict.closeMenu}
                 onClick={() => setIsSidebarOpen(false)}
                 className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
               >
@@ -230,7 +273,7 @@ export const Navbar: React.FC = () => {
 
             <nav className="flex flex-col gap-1.5 mt-6">
               <Link
-                href="/#home"
+                href={href("/#home")}
                 onClick={() => setIsSidebarOpen(false)}
                 className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                   pathname === "/"
@@ -238,14 +281,14 @@ export const Navbar: React.FC = () => {
                     : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                 }`}
               >
-                <span>Home</span>
+                <span>{dict.home}</span>
                 {pathname === "/" && (
                   <span className="w-1.5 h-1.5 rounded-full bg-white" />
                 )}
               </Link>
 
               <Link
-                href="/#about"
+                href={href("/#about")}
                 onClick={() => setIsSidebarOpen(false)}
                 className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                   pathname === "/about"
@@ -253,7 +296,7 @@ export const Navbar: React.FC = () => {
                     : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                 }`}
               >
-                <span>About</span>
+                <span>{dict.about}</span>
                 {pathname === "/about" && (
                   <span className="w-1.5 h-1.5 rounded-full bg-white" />
                 )}
@@ -308,7 +351,7 @@ export const Navbar: React.FC = () => {
               </div> */}
 
               <Link
-                href="/#team"
+                href={href("/#team")}
                 onClick={() => setIsSidebarOpen(false)}
                 className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                   pathname === "/team"
@@ -316,14 +359,14 @@ export const Navbar: React.FC = () => {
                     : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                 }`}
               >
-                <span>Team</span>
+                <span>{dict.team}</span>
                 {pathname === "/team" && (
                   <span className="w-1.5 h-1.5 rounded-full bg-white" />
                 )}
               </Link>
 
               <Link
-                href="/news"
+                href={href("/news")}
                 onClick={() => setIsSidebarOpen(false)}
                 className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                   pathname === "/news"
@@ -331,12 +374,17 @@ export const Navbar: React.FC = () => {
                     : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                 }`}
               >
-                <span>News & Articles</span>
+                <span>{dict.news}</span>
                 {pathname === "/news" && (
                   <span className="w-1.5 h-1.5 rounded-full bg-white" />
                 )}
               </Link>
             </nav>
+
+            <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-6">
+              <span className="text-xs font-semibold text-slate-500">{dict.switchLanguage}</span>
+              <LanguageSwitch lang={lang} label={dict.switchLanguage} />
+            </div>
           </div>
 
           {/* <div className="pt-4 border-t border-slate-100">

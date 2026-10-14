@@ -27,6 +27,16 @@ model news {
   gallery_title    String?  @db.VarChar(255)
   gallery          Json?
 
+  // Indonesian version (shown on /id). Empty fields fall back to the English
+  // ones above. Slug, status, date, category, thumbnail and photos are shared.
+  title_id            String? @db.VarChar(255)
+  excerpt_id          String? @db.VarChar(500)
+  content_id          String?
+  key_topics_title_id String? @db.VarChar(255)
+  key_topics_id       Json?
+  gallery_label_id    String? @db.VarChar(100)
+  gallery_title_id    String? @db.VarChar(255)
+
   author_id     String      @db.VarChar(36)
   users         users       @relation(fields: [author_id], references: [id], onDelete: Cascade, map: "fk_news_author")
 

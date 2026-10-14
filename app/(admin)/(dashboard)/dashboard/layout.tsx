@@ -1,7 +1,7 @@
 import { requireDashboardUser } from "@/lib/dal";
 import { DashboardSidebar } from "@/components/organisms/dashboard/DashboardSidebar";
 
-export const metadata = { title: "Dashboard | Gama Putra Harmoni" };
+export const metadata = { title: "Dashboard", robots: { index: false, follow: false } };
 
 export default async function DashboardLayout({
   children,

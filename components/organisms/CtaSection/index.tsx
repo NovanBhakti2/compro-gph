@@ -3,8 +3,10 @@
 import React from "react";
 import Link from "next/link";
 import { FadeIn } from "@/components/atoms/animations/FadeIn";
+import type { Dictionary } from "@/lib/i18n/dictionaries/en";
+import { localizePath, type Locale } from "@/lib/i18n/config";
 
-export default function CtaSection() {
+export default function CtaSection({ lang, dict }: { lang: Locale; dict: Dictionary["cta"] }) {
   return (
     <section className="py-24 px-6 lg:px-20 bg-white">
       <div className="max-w-4xl mx-auto text-center space-y-8">
@@ -12,32 +14,30 @@ export default function CtaSection() {
           <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#C7974C]/50 bg-[#C7974C]/10">
             <span className="w-1.5 h-1.5 rounded-full bg-[#C7974C]" />
             <span className="text-xs font-semibold text-[#9c7d42] tracking-wide">
-              Start the Conversation
+              {dict.badge}
             </span>
           </div>
           <h2 className="text-3xl sm:text-5xl font-extrabold text-[#0f1932] tracking-tight mt-3">
-            Ready to Elevate Your Organization&apos;s Standards?
+            {dict.title}
           </h2>
           <p className="text-slate-500 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto mt-4">
-            Our consultants are ready to help you navigate compliance, build
-            internal capability, and achieve sustainable operational excellence
-            — tailored to your industry.
+            {dict.text}
           </p>
         </FadeIn>
 
         <FadeIn direction="up" delay={0.2}>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
             <Link
-              href="/#contact"
+              href={localizePath(lang, "/#contact")}
               className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#C7974C] text-white text-xs font-semibold tracking-wide hover:bg-[#b0833e] transition-all shadow-md hover:shadow-lg"
             >
-              Arrange a Consultation
+              {dict.consult}
             </Link>
             <Link
-              href="/#services"
+              href={localizePath(lang, "/#services")}
               className="w-full sm:w-auto px-8 py-3.5 rounded-full border border-slate-200 text-slate-700 text-xs font-semibold tracking-wide hover:bg-slate-50 transition-colors"
             >
-              Explore Our Services
+              {dict.explore}
             </Link>
           </div>
         </FadeIn>
@@ -61,9 +61,9 @@ export default function CtaSection() {
                 </svg>
               </div>
               <div>
-                <p className="text-xs font-bold text-[#0f1932]">ISO-Aligned</p>
+                <p className="text-xs font-bold text-[#0f1932]">{dict.stats[0].title}</p>
                 <p className="text-[11px] text-slate-400">
-                  Standards we work with
+                  {dict.stats[0].sub}
                 </p>
               </div>
             </div>
@@ -86,10 +86,10 @@ export default function CtaSection() {
               </div>
               <div>
                 <p className="text-xs font-bold text-[#0f1932]">
-                  20+ Years Experience
+                  {dict.stats[1].title}
                 </p>
                 <p className="text-[11px] text-slate-400">
-                  Component team expertise
+                  {dict.stats[1].sub}
                 </p>
               </div>
             </div>
@@ -112,10 +112,10 @@ export default function CtaSection() {
               </div>
               <div>
                 <p className="text-xs font-bold text-[#0f1932]">
-                  Jakarta-Based
+                  {dict.stats[2].title}
                 </p>
                 <p className="text-[11px] text-slate-400">
-                  Serving nationwide clients
+                  {dict.stats[2].sub}
                 </p>
               </div>
             </div>
