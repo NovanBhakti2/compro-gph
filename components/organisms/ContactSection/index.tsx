@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
+import type { Dictionary } from "@/lib/i18n/dictionaries/en";
 
-export const ContactSection = () => {
+export const ContactSection = ({ dict }: { dict: Dictionary["contact"] }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -24,7 +25,7 @@ export const ContactSection = () => {
     e.preventDefault();
 
     const recipientEmail = "gamaputraharmoni@gmail.com";
-    const formattedBody = `Nama: ${formData.name}\nEmail Pengirim: ${formData.email}\n\nPesan:\n${formData.message}`;
+    const formattedBody = `${dict.mailName}: ${formData.name}\n${dict.mailSender}: ${formData.email}\n\n${dict.mailMessage}:\n${formData.message}`;
 
     const encodedSubject = encodeURIComponent(formData.subject);
     const encodedBody = encodeURIComponent(formattedBody);
@@ -50,15 +51,14 @@ export const ContactSection = () => {
             <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#C7974C]/50 bg-[#C7974C]/10">
               <span className="w-1.5 h-1.5 rounded-full bg-[#C7974C]" />
               <span className="text-xs font-semibold text-[#9c7d42] tracking-wide">
-                Get In Touch
+                {dict.badge}
               </span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0f1932] tracking-tight">
-              Contact Us
+              {dict.title}
             </h2>
             <p className="text-slate-600 text-sm leading-relaxed">
-              Have questions about our training or consulting services? Reach
-              out to our Jakarta headquarters teams today.
+              {dict.intro}
             </p>
           </div>
 
@@ -80,7 +80,7 @@ export const ContactSection = () => {
                 </svg>
               </div>
               <div>
-                <p className="text-xs text-slate-400">Phone Support</p>
+                <p className="text-xs text-slate-400">{dict.phone}</p>
                 <p className="text-sm font-bold text-slate-800">
                   +62 81122887789
                 </p>
@@ -104,7 +104,7 @@ export const ContactSection = () => {
                 </svg>
               </div>
               <div>
-                <p className="text-xs text-slate-400">Email Inquiry</p>
+                <p className="text-xs text-slate-400">{dict.email}</p>
                 <p className="text-sm font-bold text-slate-800">
                   gamaputraharmoni@gmail.com
                 </p>
@@ -134,7 +134,7 @@ export const ContactSection = () => {
                 </svg>
               </div>
               <div>
-                <p className="text-xs text-slate-400">Headquarters Address</p>
+                <p className="text-xs text-slate-400">{dict.address}</p>
                 <p className="text-sm font-bold text-slate-800 leading-snug">
                   PT. Gama Putra Harmoni
                   <br />
@@ -150,27 +150,27 @@ export const ContactSection = () => {
 
         <div className="bg-slate-50 p-8 sm:p-10 rounded-3xl border border-slate-100">
           <h3 className="text-xl font-bold text-[#0f1932] mb-6">
-            Send a Message
+            {dict.formTitle}
           </h3>
           <form className="space-y-4" onSubmit={handleSubmit} suppressHydrationWarning>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-slate-700">
-                  Full Name
+                  {dict.nameLabel}
                 </label>
                 <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  placeholder="Your name"
+                  placeholder={dict.namePlaceholder}
                   required
                   className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-[#C7974C]"
                 />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-slate-700">
-                  Email Address
+                  {dict.emailLabel}
                 </label>
                 <input
                   type="email"
@@ -186,14 +186,14 @@ export const ContactSection = () => {
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-slate-700">
-                Subject
+                {dict.subjectLabel}
               </label>
               <input
                 type="text"
                 name="subject"
                 value={formData.subject}
                 onChange={handleChange}
-                placeholder="How can we assist you?"
+                placeholder={dict.subjectPlaceholder}
                 required
                 className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-[#C7974C]"
               />
@@ -201,14 +201,14 @@ export const ContactSection = () => {
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-slate-700">
-                Message
+                {dict.messageLabel}
               </label>
               <textarea
                 rows={4}
                 name="message"
                 value={formData.message}
                 onChange={handleChange}
-                placeholder="Describe your requirements in detail..."
+                placeholder={dict.messagePlaceholder}
                 required
                 className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-[#C7974C] resize-none"
               />
@@ -218,7 +218,7 @@ export const ContactSection = () => {
               type="submit"
               className="w-full py-3.5 bg-[#0f1932] hover:bg-[#182850] text-white font-semibold rounded-xl text-sm transition"
             >
-              Send Message
+              {dict.submit}
             </button>
           </form>
         </div>

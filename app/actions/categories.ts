@@ -43,7 +43,8 @@ function isUniqueSlugError(error: unknown) {
 
 function revalidateCategories() {
   revalidatePath("/dashboard", "layout");
-  revalidatePath("/news", "layout");
+  // Category names show on every public news page, in both languages
+  revalidatePath("/[lang]/news", "layout");
 }
 
 export async function createCategory(

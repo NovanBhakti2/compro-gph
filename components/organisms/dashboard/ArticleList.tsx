@@ -7,6 +7,7 @@ import { EmptyState, Icon, buttonClass } from "./ui";
 export type ArticleListItem = {
   id: string;
   title: string;
+  title_id: string | null;
   slug: string;
   status: string;
   updated_at: Date;
@@ -79,12 +80,22 @@ export function ArticleList({
                   )}
                 </div>
                 <div className="min-w-0">
-                  <Link
-                    href={`/dashboard/articles/${article.id}`}
-                    className="line-clamp-1 text-sm font-semibold text-[#0f1932] hover:text-[#9c7d42]"
-                  >
-                    {article.title}
-                  </Link>
+                  <div className="flex min-w-0 items-center gap-1.5">
+                    <Link
+                      href={`/dashboard/articles/${article.id}`}
+                      className="line-clamp-1 text-sm font-semibold text-[#0f1932] hover:text-[#9c7d42]"
+                    >
+                      {article.title}
+                    </Link>
+                    <span
+                      title={article.title_id ? "Sudah ada versi Bahasa Indonesia" : "Belum diterjemahkan ke Bahasa Indonesia"}
+                      className={`shrink-0 rounded px-1 py-px text-[9px] font-extrabold ${
+                        article.title_id ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-400"
+                      }`}
+                    >
+                      ID
+                    </span>
+                  </div>
                   <p className="truncate text-xs text-slate-400">
                     {compact ? (
                       <>

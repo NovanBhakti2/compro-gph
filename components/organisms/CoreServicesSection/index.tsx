@@ -1,10 +1,10 @@
 import React from "react";
 import Image from "next/image";
+import type { Dictionary } from "@/lib/i18n/dictionaries/en";
 
-const coreServices = [
+// Text per item comes from dict.coreServices.items (same order)
+const coreServiceMedia = [
   {
-    title: "Training",
-    desc: "The Training service is designed to build internal capabilities and empower teams with the knowledge and skills necessary to sustain operational excellence. Programs are customized based on industry needs – including food safety, quality assurance, hospitality standards, and leadership development.",
     image:
       "/content/bali-3.jpg",
     icon: (
@@ -24,8 +24,6 @@ const coreServices = [
     ),
   },
   {
-    title: "Consulting",
-    desc: "The Consultant service aims to provide strategic and technical guidance to improve overall business performance, quality systems, and sustainability. We work closely with clients to design tailored solutions that align with their goals – from enhancing operational efficiency and customer satisfaction to ensuring regulatory compliance.",
     image:
       "/content/consulting.jpg",
     icon: (
@@ -45,8 +43,6 @@ const coreServices = [
     ),
   },
   {
-    title: "Audit & Evaluation",
-    desc: "The Audit service focuses on assessing and verifying compliance with relevant standards, regulations, and internal policies. Through systematic inspections and evaluations, we identify potential gaps and risks in operational processes related to food safety, quality management, and hospitality performance.",
     image:
       "/content/vimala-pulman.jpg",
     icon: (
@@ -67,7 +63,9 @@ const coreServices = [
   },
 ];
 
-export const CoreServicesSection = () => {
+export const CoreServicesSection = ({ dict }: { dict: Dictionary["coreServices"] }) => {
+  const coreServices = coreServiceMedia.map((media, i) => ({ ...media, ...dict.items[i] }));
+
   return (
     <section
       id="services"
@@ -78,11 +76,11 @@ export const CoreServicesSection = () => {
           <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#C7974C]/50 bg-[#C7974C]/10">
             <span className="w-1.5 h-1.5 rounded-full bg-[#C7974C]" />
             <span className="text-xs font-semibold text-[#9c7d42] tracking-wide">
-              What We Deliver
+              {dict.badge}
             </span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0f1932] tracking-tight">
-            Our Core Services
+            {dict.title}
           </h2>
         </div>
 

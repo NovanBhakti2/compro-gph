@@ -1,6 +1,6 @@
 import { LoginForm } from "./LoginForm";
 
-export const metadata = { title: "Login | Gama Putra Harmoni" };
+export const metadata = { title: "Login", robots: { index: false, follow: false } };
 
 export default async function LoginPage({
   searchParams,

@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import type { Dictionary } from "@/lib/i18n/dictionaries/en";
 
 // Same offsets as FadeIn's directions, driven by the CSS `.hero-in` animation
 // (app/globals.css) so the hero animates on first paint instead of after JS.
@@ -11,7 +12,7 @@ const heroIn = (x: number, y: number, delay: number) =>
     animationDelay: `${delay}s`,
   }) as React.CSSProperties;
 
-export const HeroSection = () => {
+export const HeroSection = ({ dict }: { dict: Dictionary["hero"] }) => {
   return (
     <section
       id="home"
@@ -34,22 +35,20 @@ export const HeroSection = () => {
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#C7974C]/40 bg-[#C7974C]/10 backdrop-blur-md">
             <span className="w-1.5 h-1.5 rounded-full bg-[#C7974C]" />
             <span className="text-xs font-medium text-[#C7974C] tracking-wide">
-              Professional Consulting & Training
+              {dict.badge}
             </span>
           </div>
         </div>
 
         <div className="hero-in" style={heroIn(30, 0, 0.12)}>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-[1.15] tracking-tight">
-            Experience the Best of Hospitality, Elevated by Our Commitment to
-            Safety & Standards
+            {dict.title}
           </h1>
         </div>
 
         <div className="hero-in" style={heroIn(0, 30, 0.2)}>
           <p className="text-base sm:text-lg text-slate-300 max-w-2xl font-light leading-relaxed">
-            Professional consulting and training company helping organizations
-            improve performance, compliance, and operational excellence.
+            {dict.subtitle}
           </p>
         </div>
 
@@ -59,7 +58,7 @@ export const HeroSection = () => {
               href="#services"
               className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-semibold text-[#0f1932] bg-[#C7974C] hover:bg-[#d8bd8d] transition-all shadow-lg shadow-[#C7974C]/20"
             >
-              Explore Our Services
+              {dict.ctaServices}
               <svg
                 className="w-4 h-4"
                 fill="none"
@@ -79,7 +78,7 @@ export const HeroSection = () => {
               href="#team"
               className="inline-flex items-center justify-center px-6 py-3.5 rounded-xl text-sm font-semibold text-white border border-slate-700 bg-slate-900/40 hover:bg-slate-800/60 backdrop-blur-sm active:scale-95 transition-transform duration-200"
             >
-              Contact Our Team
+              {dict.ctaTeam}
             </Link>
           </div>
         </div>

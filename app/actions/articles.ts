@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { LOCALES } from "@/lib/i18n/config";
 import { redirect } from "next/navigation";
 import * as z from "zod";
 import { prisma } from "@/lib/prisma";
@@ -33,6 +34,8 @@ const ArticleSchema = z.object({
       error: "Isi dengan URL (https://...) atau path (/content/...).",
     })
     .transform((v) => v || null),
+  thumbnail_caption: optionalText(255),
+  thumbnail_caption_id: optionalText(255),
   category_id: z.string().transform((v) => v || null),
   status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]),
   // "YYYY-MM-DD"; empty = set automatically when published
@@ -63,7 +66,26 @@ const ArticleSchema = z.object({
       alt: z.string().max(255),
     })
   ),
+  // Indonesian version: all optional, empty falls back to English on /id
+  title_id: optionalText(255),
+  excerpt_id: optionalText(500),
+  content_id: z
+    .string()
+    .trim()
+    .transform((v) => v || null),
+  key_topics_title_id: optionalText(255),
+  key_topics_id: z.array(z.object({ title: z.string(), description: z.string() })),
+  gallery_label_id: optionalText(100),
+  gallery_title_id: optionalText(255),
 });
+
+function optionalText(max: number) {
+  return z
+    .string()
+    .trim()
+    .max(max, { error: `Maksimal ${max} karakter.` })
+    .transform((v) => v || null);
+}
 
 export type ArticleFormState =
   | {
@@ -79,6 +101,8 @@ function parseArticle(formData: FormData) {
     excerpt: formData.get("excerpt") ?? "",
     content: formData.get("content") ?? "",
     thumbnail_url: formData.get("thumbnail_url") ?? "",
+    thumbnail_caption: formData.get("thumbnail_caption") ?? "",
+    thumbnail_caption_id: formData.get("thumbnail_caption_id") ?? "",
     category_id: formData.get("category_id") ?? "",
     status: formData.get("status") ?? "DRAFT",
     published_at: formData.get("published_at") ?? "",
@@ -97,6 +121,18 @@ function parseArticle(formData: FormData) {
         alt: formData.getAll("gallery_alt")[i] ?? "",
       }))
     ),
+    title_id: formData.get("title_id") ?? "",
+    excerpt_id: formData.get("excerpt_id") ?? "",
+    content_id: formData.get("content_id") ?? "",
+    key_topics_title_id: formData.get("key_topics_title_id") ?? "",
+    key_topics_id: parseKeyTopics(
+      formData.getAll("key_topic_title_id").map((title, i) => ({
+        title,
+        description: formData.getAll("key_topic_description_id")[i] ?? "",
+      }))
+    ),
+    gallery_label_id: formData.get("gallery_label_id") ?? "",
+    gallery_title_id: formData.get("gallery_title_id") ?? "",
   });
 }
 
@@ -105,9 +141,13 @@ function isUniqueSlugError(error: unknown) {
 }
 
 function revalidateArticle(...slugs: string[]) {
-  revalidatePath("/news");
+  // Public pages are routed as /[lang]/... ("/news" is served from "/en/news")
+  for (const lang of LOCALES) {
+    revalidatePath(`/${lang}/news`);
+    slugs.forEach((slug) => revalidatePath(`/${lang}/news/${slug}`));
+  }
   revalidatePath("/api/news");
-  slugs.forEach((slug) => revalidatePath(`/news/${slug}`));
+  revalidatePath("/sitemap.xml");
   revalidatePath("/dashboard", "layout");
 }
 

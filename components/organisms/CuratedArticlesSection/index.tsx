@@ -4,12 +4,14 @@ import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { NewsItem } from "@/data/news";
 import { FadeIn } from "@/components/atoms/animations/FadeIn";
+import type { Dictionary } from "@/lib/i18n/dictionaries/en";
+import { localizePath, type Locale } from "@/lib/i18n/config";
 
-const formatDate = (dateValue?: Date | string | null) => {
+const formatDate = (dateValue: Date | string | null | undefined, locale: string) => {
   if (!dateValue) return "";
   const date = new Date(dateValue);
   return date
-    .toLocaleDateString("en-GB", {
+    .toLocaleDateString(locale, {
       day: "2-digit",
       month: "short",
       year: "numeric",
@@ -17,30 +19,37 @@ const formatDate = (dateValue?: Date | string | null) => {
     .toUpperCase();
 };
 
+// Sentinel for the "all" filter, separate from the translated label
+const ALL = "__all__";
+
 export default function CuratedArticlesSection({
   initialNews = [],
+  lang,
+  dict,
+  dateLocale,
 }: {
   initialNews?: NewsItem[];
+  lang: Locale;
+  dict: Dictionary["news"];
+  dateLocale: string;
 }) {
-  const [selectedCategory, setSelectedCategory] = useState("All Articles");
+  const [selectedCategory, setSelectedCategory] = useState(ALL);
   const [visibleCount, setVisibleCount] = useState(6);
 
   const categoriesList = useMemo(() => {
     const categoryNames = new Set<string>();
-    console.log("CuratedArticlesSection - initialNews:", initialNews);
     initialNews.forEach((item) => {
-      console.log("item.categories:", item.categories);
       if (item.categories?.name) {
         categoryNames.add(item.categories.name);
       }
     });
-    return ["All Articles", ...Array.from(categoryNames)];
+    return [ALL, ...Array.from(categoryNames)];
   }, [initialNews]);
 
   const filteredArticles = useMemo(() => {
     return initialNews.filter((item) => {
       if (item.status !== "PUBLISHED") return false;
-      if (selectedCategory === "All Articles") return true;
+      if (selectedCategory === ALL) return true;
 
       const catName = item.categories?.name || "";
       return catName.toLowerCase() === selectedCategory.toLowerCase();
@@ -85,15 +94,14 @@ export default function CuratedArticlesSection({
             <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#C7974C]/50 bg-[#C7974C]/10">
               <span className="w-1.5 h-1.5 rounded-full bg-[#C7974C]" />
               <span className="text-xs font-semibold text-[#9c7d42] tracking-wide">
-                Curated Insights
+                {dict.curatedBadge}
               </span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0f1932] tracking-tight">
-              Picked For You
+              {dict.curatedTitle}
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 max-w-xl">
-              Browse through our latest insights in operational excellence,
-              quality compliance, and revenue growth.
+              {dict.curatedText}
             </p>
           </div>
         </FadeIn>
@@ -110,7 +118,7 @@ export default function CuratedArticlesSection({
                     : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/80"
                 }`}
               >
-                {cat}
+                {cat === ALL ? dict.allArticles : cat}
               </button>
             ))}
           </div>
@@ -124,7 +132,7 @@ export default function CuratedArticlesSection({
               delay={0.05 * ((idx % 3) + 1)}
             >
               <Link
-                href={`/news/${article.slug}`}
+                href={localizePath(lang, `/news/${article.slug}`)}
                 className="group bg-white rounded-3xl border border-slate-100 p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between h-full space-y-5"
               >
                 <div className="space-y-4">
@@ -141,11 +149,11 @@ export default function CuratedArticlesSection({
 
                   <div className="flex items-center gap-2 text-[11px] font-bold tracking-wider text-slate-400">
                     <span className="text-[#9c7d42] uppercase">
-                      {article.categories?.name || "GENERAL"}
+                      {article.categories?.name || dict.general}
                     </span>
                     <span>•</span>
                     <span>
-                      {formatDate(article.published_at || article.created_at)}
+                      {formatDate(article.published_at || article.created_at, dateLocale)}
                     </span>
                   </div>
 
@@ -159,7 +167,7 @@ export default function CuratedArticlesSection({
                 </div>
 
                 <div className="pt-2 flex items-center gap-1.5 text-xs font-bold text-[#0f1932] group-hover:text-[#9c7d42] transition-colors">
-                  <span>Read article</span>
+                  <span>{dict.readArticle}</span>
                   <svg
                     className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1"
                     fill="none"
@@ -190,7 +198,7 @@ export default function CuratedArticlesSection({
               onClick={handleLoadMore}
               className="px-8 py-3 rounded-full border border-[#0f1932] text-[#0f1932] text-xs font-bold hover:bg-[#0f1932] hover:text-white transition-all duration-300 shadow-sm hover:shadow"
             >
-              Load More Articles
+              {dict.loadMore}
             </button>
           </FadeIn>
         ) : (
@@ -204,7 +212,7 @@ export default function CuratedArticlesSection({
                 onClick={handleLoadLess}
                 className="px-8 py-3 rounded-full border border-[#0f1932] text-[#0f1932] text-xs font-bold hover:bg-[#0f1932] hover:text-white transition-all duration-300 shadow-sm hover:shadow"
               >
-                Less Articles
+                {dict.loadLess}
               </button>
             </FadeIn>
           )

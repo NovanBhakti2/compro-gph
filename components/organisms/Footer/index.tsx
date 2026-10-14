@@ -1,14 +1,17 @@
 import Image from "next/image";
 import React from "react";
+import type { Dictionary } from "@/lib/i18n/dictionaries/en";
+import { localizePath, type Locale } from "@/lib/i18n/config";
 
-export const Footer = () => {
+type FooterProps = { lang: Locale; dict: Dictionary["footer"] };
+
+export const Footer = ({ lang, dict }: FooterProps) => {
   const currentYear = new Date().getFullYear();
 
   const waNumber = "6281122887789";
 
-  const waText = encodeURIComponent(
-    "Halo Gama Putra Harmoni, saya ingin menanyakan informasi lebih lanjut mengenai layanan Anda.",
-  );
+  const waText = encodeURIComponent(dict.whatsappText);
+  const href = (path: string) => localizePath(lang, path);
 
   return (
     <footer className="w-full bg-[#0f1932] text-neutral-300 py-12 px-6 border-t border-neutral-800">
@@ -26,34 +29,31 @@ export const Footer = () => {
             </div>
             <h2 className="text-xl font-bold text-white">Gama Putra Harmoni</h2>
           </div>
-          <p className="text-sm text-neutral-400">
-            Professional consulting and training company specializing in
-            hospitality, food safety and quality management systems.
-          </p>
+          <p className="text-sm text-neutral-400">{dict.tagline}</p>
         </div>
 
         {/* Perusahaan */}
         <div>
-          <h3 className="font-semibold text-white mb-3">Perusahaan</h3>
+          <h3 className="font-semibold text-white mb-3">{dict.company}</h3>
           <ul className="space-y-2 text-sm">
             <li>
-              <a href="#" className="hover:text-[#C7974C] transition-colors">
-                Tentang Kami
+              <a href={href("/#about")} className="hover:text-[#C7974C] transition-colors">
+                {dict.aboutUs}
               </a>
             </li>
             <li>
               <a href="#" className="hover:text-[#C7974C] transition-colors">
-                Karier
+                {dict.careers}
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-[#C7974C] transition-colors">
-                Blog
+              <a href={href("/news")} className="hover:text-[#C7974C] transition-colors">
+                {dict.blog}
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-[#C7974C] transition-colors">
-                Kontak
+              <a href={href("/#contact")} className="hover:text-[#C7974C] transition-colors">
+                {dict.contact}
               </a>
             </li>
           </ul>
@@ -61,28 +61,28 @@ export const Footer = () => {
 
         {/* Legal */}
         <div>
-          <h3 className="font-semibold text-white mb-3">Legal</h3>
+          <h3 className="font-semibold text-white mb-3">{dict.legal}</h3>
           <ul className="space-y-2 text-sm">
             <li>
               <a href="#" className="hover:text-[#C7974C] transition-colors">
-                Kebijakan Privasi
+                {dict.privacy}
               </a>
             </li>
             <li>
               <a href="#" className="hover:text-[#C7974C] transition-colors">
-                Syarat & Ketentuan
+                {dict.terms}
               </a>
             </li>
             <li>
               <a href="#" className="hover:text-[#C7974C] transition-colors">
-                Keamanan
+                {dict.security}
               </a>
             </li>
           </ul>
         </div>
 
         <div>
-          <h3 className="font-semibold text-white mb-3">Hubungi Kami</h3>
+          <h3 className="font-semibold text-white mb-3">{dict.reachUs}</h3>
           <ul className="space-y-3 text-sm">
             <li>
               <a
@@ -182,10 +182,8 @@ export const Footer = () => {
 
       {/* Copyright */}
       <div className="max-w-7xl mx-auto mt-10 pt-6 border-t border-neutral-800/80 flex flex-col md:flex-row justify-between items-center text-xs text-neutral-500 gap-4">
-        <p>&copy; {currentYear} Gama Putra Harmoni. All rights reserved.</p>
-        <p className="text-neutral-500">
-          Hospitality, Food Safety & Quality Management
-        </p>
+        <p>&copy; {currentYear} Gama Putra Harmoni. {dict.rights}</p>
+        <p className="text-neutral-500">{dict.bottomTagline}</p>
       </div>
     </footer>
   );

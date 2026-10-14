@@ -1,42 +1,48 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useRef, useState } from "react";
+import { useActionState, useState } from "react";
 import type { ArticleFormState } from "@/app/actions/articles";
 import { quickCreateCategory } from "@/app/actions/categories";
 import { slugify } from "@/lib/slugify";
 import { toDateInputValue } from "@/lib/articleDate";
 import type { KeyTopic } from "@/lib/keyTopics";
 import type { GalleryImage } from "@/lib/gallery";
-import { GallerySection } from "@/components/molecules/GallerySection";
-import { KeyTopicsBox } from "@/components/molecules/KeyTopicsBox";
-import { GalleryEditor } from "./GalleryEditor";
 import { ArticleDatePicker } from "./ArticleDatePicker";
 import { CategorySelect } from "./CategorySelect";
+import { ContentEditorCard } from "./ContentEditorCard";
+import { GalleryEditor } from "./GalleryEditor";
 import { ImageUpload } from "./ImageUpload";
 import { KeyTopicsEditor } from "./KeyTopicsEditor";
-import { RichTextEditor } from "./RichTextEditor";
-import { uploadImage } from "./uploadImage";
 import { Card, Field, Icon, buttonClass, inputClass, type IconName } from "./ui";
 
 type Category = { id: string; name: string };
 type Status = "DRAFT" | "PUBLISHED" | "ARCHIVED";
+type Lang = "en" | "id";
+
+/** Fields that exist once per language (English + Indonesian *_id columns). */
+type LocalizedFields = {
+  title: string;
+  excerpt: string;
+  content: string;
+  key_topics_title: string;
+  key_topics: KeyTopic[];
+  gallery_label: string;
+  gallery_title: string;
+};
 
 export type ArticleFormValues = {
-  title: string;
   slug: string;
-  excerpt: string | null;
-  content: string;
   thumbnail_url: string | null;
+  thumbnail_caption: string;
+  thumbnail_caption_id: string;
   category_id: string | null;
   status: Status;
   /** "YYYY-MM-DD" */
   published_at: string;
-  key_topics_title: string | null;
-  key_topics: KeyTopic[];
-  gallery_label: string | null;
-  gallery_title: string | null;
   gallery: GalleryImage[];
+  en: LocalizedFields;
+  id: LocalizedFields;
 };
 
 type Props = {
@@ -48,32 +54,31 @@ type Props = {
   viewHref?: string;
 };
 
-// Snippets inserted at the cursor by the toolbar. "$" marks the selected text.
-const SNIPPETS = [
-  { label: "H2", html: '<h2 class="text-2xl font-extrabold text-[#0f1932] pt-4">$</h2>' },
-  { label: "Paragraf", html: "<p>$</p>" },
-  { label: "Bold", html: "<strong>$</strong>" },
-  { label: "Italic", html: "<em>$</em>" },
-  { label: "List", html: '<ul class="list-disc pl-6 space-y-1">\n  <li>$</li>\n</ul>' },
-  {
-    label: "Quote",
-    html: '<div class="p-6 bg-white border-l-4 border-[#C7974C] rounded-r-2xl shadow-sm my-6">\n  <p class="italic font-medium text-slate-800">$</p>\n</div>',
-  },
-  { label: "Link", html: '<a href="https://" class="text-[#9c7d42] underline">$</a>' },
-  { label: "Gambar", html: '<img src="https://" alt="$" class="rounded-2xl my-6 w-full" />' },
+const EMPTY_LOCALIZED: LocalizedFields = {
+  title: "",
+  excerpt: "",
+  content: "",
+  key_topics_title: "",
+  key_topics: [],
+  gallery_label: "",
+  gallery_title: "",
+};
+
+const LANG_TABS: { value: Lang; label: string; hint: string }[] = [
+  { value: "en", label: "English", hint: "Bahasa utama · /news/..." },
+  { value: "id", label: "Bahasa Indonesia", hint: "Tampil di /id/news/..." },
 ];
 
-/**
- * Hand-written HTML (wrapper divs, Tailwind classes, grids) that the visual
- * editor would flatten. Such content opens in HTML mode by default.
- */
-const hasCustomMarkup = (html: string) => /<(div|section|span|table)[\s>]|\sclass=/i.test(html);
-
-const CONTENT_TABS = [
-  { value: "visual", label: "Visual" },
-  { value: "html", label: "HTML" },
-  { value: "preview", label: "Preview" },
-] as const;
+// Form errors that belong to the Indonesian tab
+const ID_ERROR_KEYS = [
+  "title_id",
+  "excerpt_id",
+  "content_id",
+  "key_topics_title_id",
+  "key_topics_id",
+  "gallery_label_id",
+  "gallery_title_id",
+];
 
 const STATUS_OPTIONS: { value: Status; label: string; hint: string; icon: IconName; active: string }[] = [
   { value: "DRAFT", label: "Draft", hint: "Belum tampil", icon: "draft", active: "border-amber-300 bg-amber-50 text-amber-700" },
@@ -96,38 +101,39 @@ export function ArticleForm({
 }: Props) {
   const [state, formAction, pending] = useActionState(action, undefined);
 
-  const [title, setTitle] = useState(initialValues?.title ?? "");
+  // Shared between languages
   const [slug, setSlug] = useState(initialValues?.slug ?? "");
-  // Auto-generate the slug from the title only until it's edited by hand
+  // Auto-generate the slug from the English title only until it's edited by hand
   const [slugTouched, setSlugTouched] = useState(Boolean(initialValues?.slug));
-  const [excerpt, setExcerpt] = useState(initialValues?.excerpt ?? "");
   const [thumbnail, setThumbnail] = useState(initialValues?.thumbnail_url ?? "");
+  const [caption, setCaption] = useState({
+    en: initialValues?.thumbnail_caption ?? "",
+    id: initialValues?.thumbnail_caption_id ?? "",
+  });
   const [status, setStatus] = useState<Status>(initialValues?.status ?? "DRAFT");
   const [publishedAt, setPublishedAt] = useState(initialValues?.published_at ?? "");
   const [categoryId, setCategoryId] = useState(initialValues?.category_id ?? "");
-  const [content, setContent] = useState(initialValues?.content ?? "");
-  const [keyTopicsTitle, setKeyTopicsTitle] = useState(initialValues?.key_topics_title ?? "");
-  const [keyTopics, setKeyTopics] = useState<KeyTopic[]>(initialValues?.key_topics ?? []);
-  const [galleryLabel, setGalleryLabel] = useState(initialValues?.gallery_label ?? "");
-  const [galleryTitle, setGalleryTitle] = useState(initialValues?.gallery_title ?? "");
   const [gallery, setGallery] = useState<GalleryImage[]>(initialValues?.gallery ?? []);
-  const [tab, setTab] = useState<"visual" | "html" | "preview">(
-    hasCustomMarkup(initialValues?.content ?? "") ? "html" : "visual"
-  );
-  const customMarkup = hasCustomMarkup(content);
 
-  const contentRef = useRef<HTMLTextAreaElement>(null);
-  const contentImageRef = useRef<HTMLInputElement>(null);
-  const [contentUploading, setContentUploading] = useState(false);
+  // Per language
+  const [fields, setFields] = useState<Record<Lang, LocalizedFields>>({
+    en: initialValues?.en ?? EMPTY_LOCALIZED,
+    id: initialValues?.id ?? EMPTY_LOCALIZED,
+  });
+  const [lang, setLang] = useState<Lang>("en");
+  const set = (l: Lang, patch: Partial<LocalizedFields>) =>
+    setFields((all) => ({ ...all, [l]: { ...all[l], ...patch } }));
 
   const [categories, setCategories] = useState(initialCategories);
   const [newCategory, setNewCategory] = useState<string | null>(null);
   const [categoryError, setCategoryError] = useState<string | null>(null);
   const [addingCategory, setAddingCategory] = useState(false);
 
-  const errors = state?.errors;
+  const errors = state?.errors as Record<string, string[] | undefined> | undefined;
   const hasErrors = Boolean(state?.message || (errors && Object.keys(errors).length));
-  const visibleTopics = keyTopics.filter((t) => t.title.trim() || t.description.trim());
+  const idHasErrors = ID_ERROR_KEYS.some((key) => errors?.[key]);
+  const enHasErrors = Boolean(errors) && Object.keys(errors ?? {}).some((key) => !ID_ERROR_KEYS.includes(key));
+  const idTranslated = Boolean(fields.id.content.trim() || fields.id.title.trim());
 
   const addCategory = async () => {
     if (!newCategory?.trim()) return;
@@ -149,30 +155,161 @@ export function ArticleForm({
     setNewCategory(null);
   };
 
-  const insertSnippet = (html: string) => {
-    const el = contentRef.current;
-    if (!el) return;
-    const { selectionStart: start, selectionEnd: end } = el;
-    const snippet = html.replace("$", content.slice(start, end));
-    setContent(content.slice(0, start) + snippet + content.slice(end));
-    requestAnimationFrame(() => {
-      el.focus();
-      el.selectionStart = el.selectionEnd = start + snippet.length;
-    });
-  };
+  /** Main column for one language. Both stay mounted so both are submitted. */
+  const renderLanguage = (l: Lang) => {
+    const f = fields[l];
+    const isEn = l === "en";
+    const suffix = isEn ? "" : "_id";
+    const err = (key: string) => errors?.[`${key}${suffix}`];
+    const visibleTopics = f.key_topics.filter((t) => t.title.trim() || t.description.trim());
+    // Indonesian preview falls back to English like the public page does
+    const previewTopics = visibleTopics.length || isEn
+      ? visibleTopics
+      : fields.en.key_topics.filter((t) => t.title.trim() || t.description.trim());
 
-  const insertUploadedImage = async (file?: File) => {
-    if (!file) return;
-    setContentUploading(true);
-    try {
-      const url = await uploadImage(file);
-      insertSnippet(`<img src="${url}" alt="$" class="rounded-2xl my-6 w-full" />`);
-    } catch (e) {
-      alert((e as Error).message);
-    } finally {
-      setContentUploading(false);
-      if (contentImageRef.current) contentImageRef.current.value = "";
-    }
+    return (
+      <div key={l} className={`min-w-0 space-y-6 ${lang === l ? "" : "hidden"}`}>
+        {!isEn && (
+          <div className="flex items-start gap-3 rounded-xl border border-[#C7974C]/30 bg-[#C7974C]/[0.07] px-4 py-3 text-xs leading-relaxed text-[#6f5426]">
+            <Icon name="draft" className="mt-0.5 h-4 w-4" />
+            <p>
+              Terjemahan untuk pengunjung <strong>/id</strong>. Kolom yang dikosongkan otomatis memakai
+              versi English. Slug, status, tanggal, kategori, thumbnail, dan foto galeri sama untuk
+              kedua bahasa.
+            </p>
+          </div>
+        )}
+
+        <Card title={isEn ? "Informasi artikel" : "Informasi artikel (Indonesia)"} bodyClassName="space-y-5 p-5">
+          <Field label="Judul" htmlFor={`title${suffix}`} error={err("title")}>
+            <input
+              id={`title${suffix}`}
+              name={`title${suffix}`}
+              value={f.title}
+              onChange={(e) => {
+                set(l, { title: e.target.value });
+                if (isEn && !slugTouched) setSlug(slugify(e.target.value));
+              }}
+              className={`${inputClass} py-2.5 text-base font-semibold`}
+              placeholder={isEn ? "Article title" : fields.en.title || "Judul artikel"}
+            />
+          </Field>
+
+          {isEn && (
+            <Field label="Slug (URL)" htmlFor="slug" error={errors?.slug}>
+              <div className="flex items-center overflow-hidden rounded-lg border border-slate-200 bg-white transition focus-within:border-[#C7974C] focus-within:ring-4 focus-within:ring-[#C7974C]/15">
+                <span className="shrink-0 border-r border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-400">
+                  /news/
+                </span>
+                <input
+                  id="slug"
+                  name="slug"
+                  value={slug}
+                  onChange={(e) => {
+                    setSlugTouched(true);
+                    setSlug(e.target.value);
+                  }}
+                  onBlur={() => setSlug(slugify(slug))}
+                  className="min-w-0 flex-1 bg-transparent px-3 py-2 text-sm text-slate-800 outline-none"
+                />
+              </div>
+            </Field>
+          )}
+
+          <Field
+            label="Ringkasan"
+            htmlFor={`excerpt${suffix}`}
+            hint="Tampil di bawah judul artikel dan di kartu berita."
+            error={err("excerpt")}
+            aside={
+              <span className={`text-[11px] ${f.excerpt.length > 500 ? "text-red-600" : "text-slate-400"}`}>
+                {f.excerpt.length}/500
+              </span>
+            }
+          >
+            <textarea
+              id={`excerpt${suffix}`}
+              name={`excerpt${suffix}`}
+              value={f.excerpt}
+              onChange={(e) => set(l, { excerpt: e.target.value })}
+              rows={2}
+              placeholder={isEn ? "One or two sentences that summarize the article" : "Satu atau dua kalimat yang merangkum artikel"}
+              className={`${inputClass} resize-y`}
+            />
+          </Field>
+        </Card>
+
+        <ContentEditorCard
+          name={`content${suffix}`}
+          value={f.content}
+          onChange={(html) => set(l, { content: html })}
+          title={isEn ? "Konten" : "Konten (Indonesia)"}
+          description="Tulis seperti di Word. Teks dari Word juga bisa langsung ditempel (paste)."
+          error={err("content")}
+          preview={{
+            keyTopicsTitle: f.key_topics_title || (isEn ? "" : fields.en.key_topics_title),
+            keyTopics: previewTopics,
+            keyTopicsLabel: isEn ? "KEY TOPICS" : "TOPIK UTAMA",
+            galleryLabel: f.gallery_label || (isEn ? "" : fields.en.gallery_label),
+            galleryTitle: f.gallery_title || (isEn ? "" : fields.en.gallery_title),
+            gallery,
+          }}
+        />
+
+        <Card
+          title={isEn ? "Key Topics" : "Key Topics (Indonesia)"}
+          description={
+            isEn
+              ? "Kotak ringkasan di samping konten. Kosongkan semua poin untuk menyembunyikannya."
+              : "Kosongkan untuk memakai Key Topics versi English."
+          }
+          actions={
+            <span className="rounded-md bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-500">
+              {visibleTopics.length} poin
+            </span>
+          }
+        >
+          <KeyTopicsEditor
+            title={f.key_topics_title}
+            topics={f.key_topics}
+            onTitleChange={(v) => set(l, { key_topics_title: v })}
+            onTopicsChange={(update) =>
+              setFields((all) => ({ ...all, [l]: { ...all[l], key_topics: update(all[l].key_topics) } }))
+            }
+            titleError={err("key_topics_title")}
+            nameSuffix={suffix}
+          />
+        </Card>
+
+        <Card
+          title={isEn ? "Galeri" : "Galeri (Indonesia)"}
+          description={
+            isEn
+              ? "Foto dokumentasi di bawah artikel. Kosongkan foto untuk menyembunyikannya."
+              : "Hanya teks label & judul. Foto galeri diatur di tab English."
+          }
+          actions={
+            <span className="rounded-md bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-500">
+              {gallery.length} foto
+            </span>
+          }
+        >
+          <GalleryEditor
+            label={f.gallery_label}
+            title={f.gallery_title}
+            images={gallery}
+            onLabelChange={(v) => set(l, { gallery_label: v })}
+            onTitleChange={(v) => set(l, { gallery_title: v })}
+            onImagesChange={setGallery}
+            nameSuffix={suffix}
+            textOnly={!isEn}
+          />
+          {isEn && errors?.gallery && (
+            <p className="mt-3 text-xs font-medium text-red-600">{errors.gallery[0]}</p>
+          )}
+        </Card>
+      </div>
+    );
   };
 
   return (
@@ -226,219 +363,57 @@ export function ArticleForm({
 
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div className="min-w-0 space-y-6">
-          <Card title="Informasi artikel" bodyClassName="space-y-5 p-5">
-            <Field label="Judul" htmlFor="title" error={errors?.title}>
-              <input
-                id="title"
-                name="title"
-                required
-                value={title}
-                onChange={(e) => {
-                  setTitle(e.target.value);
-                  if (!slugTouched) setSlug(slugify(e.target.value));
-                }}
-                className={`${inputClass} py-2.5 text-base font-semibold`}
-                placeholder="Judul artikel"
-              />
-            </Field>
-
-            <Field label="Slug (URL)" htmlFor="slug" error={errors?.slug}>
-              <div className="flex items-center overflow-hidden rounded-lg border border-slate-200 bg-white transition focus-within:border-[#C7974C] focus-within:ring-4 focus-within:ring-[#C7974C]/15">
-                <span className="shrink-0 border-r border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-400">
-                  /news/
-                </span>
-                <input
-                  id="slug"
-                  name="slug"
-                  value={slug}
-                  onChange={(e) => {
-                    setSlugTouched(true);
-                    setSlug(e.target.value);
-                  }}
-                  onBlur={() => setSlug(slugify(slug))}
-                  className="min-w-0 flex-1 bg-transparent px-3 py-2 text-sm text-slate-800 outline-none"
-                />
-              </div>
-            </Field>
-
-            <Field
-              label="Ringkasan"
-              htmlFor="excerpt"
-              hint="Tampil di bawah judul artikel dan di kartu berita."
-              error={errors?.excerpt}
-              aside={
-                <span className={`text-[11px] ${excerpt.length > 500 ? "text-red-600" : "text-slate-400"}`}>
-                  {excerpt.length}/500
-                </span>
-              }
-            >
-              <textarea
-                id="excerpt"
-                name="excerpt"
-                value={excerpt}
-                onChange={(e) => setExcerpt(e.target.value)}
-                rows={2}
-                placeholder="Satu atau dua kalimat yang merangkum artikel"
-                className={`${inputClass} resize-y`}
-              />
-            </Field>
-          </Card>
-
-          <Card
-            title="Konten"
-            description="Tulis seperti di Word. Teks dari Word juga bisa langsung ditempel (paste)."
-            actions={
-              <div className="flex rounded-lg bg-slate-100 p-0.5 text-xs font-semibold">
-                {CONTENT_TABS.map((t) => (
-                  <button
-                    key={t.value}
-                    type="button"
-                    onClick={() => setTab(t.value)}
-                    className={`rounded-md px-3 py-1.5 transition ${
-                      tab === t.value ? "bg-white text-[#0f1932] shadow-sm" : "text-slate-500 hover:text-slate-700"
-                    }`}
-                  >
-                    {t.label}
-                  </button>
-                ))}
-              </div>
-            }
-            bodyClassName=""
-          >
-            {tab === "visual" && customMarkup && (
-              <div className="flex items-start gap-2.5 border-b border-amber-200 bg-amber-50 px-5 py-3 text-xs text-amber-800">
-                <Icon name="draft" className="mt-0.5 h-4 w-4" />
-                <p>
-                  Artikel ini memakai format khusus (kotak/grid) yang dibuat lewat HTML. Mengedit di mode
-                  Visual akan menyederhanakan format tersebut.{" "}
-                  <button type="button" onClick={() => setTab("html")} className="font-semibold underline">
-                    Edit lewat HTML saja
-                  </button>
-                </p>
-              </div>
-            )}
-            {tab === "visual" ? (
-              <RichTextEditor value={content} onChange={setContent} onUploadImage={uploadImage} />
-            ) : tab === "html" ? (
-              <>
-                <div className="flex flex-wrap items-center gap-1 border-b border-slate-100 bg-slate-50/70 px-3 py-2">
-                  {SNIPPETS.map((s) => (
-                    <button
-                      key={s.label}
-                      type="button"
-                      onClick={() => insertSnippet(s.html)}
-                      className="rounded-md px-2.5 py-1 text-xs font-semibold text-slate-600 transition hover:bg-white hover:shadow-sm"
-                    >
-                      {s.label}
-                    </button>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => contentImageRef.current?.click()}
-                    disabled={contentUploading}
-                    className={`${buttonClass("gold", "sm")} ml-auto`}
-                  >
-                    <Icon name="image" className="h-3.5 w-3.5" />
-                    {contentUploading ? "Mengupload..." : "Upload gambar"}
-                  </button>
-                  <input
-                    ref={contentImageRef}
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp,image/gif"
-                    className="hidden"
-                    onChange={(e) => insertUploadedImage(e.target.files?.[0])}
-                  />
-                </div>
-                <textarea
-                  id="content"
-                  ref={contentRef}
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  rows={20}
-                  spellCheck={false}
-                  aria-label="Konten (HTML)"
-                  className="block w-full resize-y bg-white px-5 py-4 font-mono text-[13px] leading-relaxed text-slate-800 outline-none"
-                  placeholder="<p>Tulis konten artikel di sini...</p>"
-                />
-              </>
-            ) : (
-              <div className="min-h-[420px] bg-[#f8fafc] p-6">
-                <div
-                  className={
-                    visibleTopics.length ? "grid grid-cols-1 items-start gap-8 xl:grid-cols-12" : undefined
-                  }
+          {/* Language tabs */}
+          <div role="tablist" aria-label="Bahasa artikel" className="grid grid-cols-2 gap-2 rounded-2xl border border-slate-200/70 bg-white p-1.5 shadow-[0_1px_2px_rgba(15,25,50,0.04)]">
+            {LANG_TABS.map((t) => {
+              const active = lang === t.value;
+              const tabErrors = t.value === "id" ? idHasErrors : enHasErrors;
+              return (
+                <button
+                  key={t.value}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => setLang(t.value)}
+                  className={`flex items-center justify-between gap-2 rounded-xl px-4 py-2.5 text-left transition ${
+                    active ? "bg-[#0f1932] text-white shadow-sm" : "text-slate-600 hover:bg-slate-50"
+                  }`}
                 >
-                  <div className={visibleTopics.length ? "xl:col-span-7" : undefined}>
-                    {content.trim() ? (
-                      <div
-                        className="article-content"
-                        dangerouslySetInnerHTML={{ __html: content }}
-                      />
-                    ) : (
-                      <p className="text-sm text-slate-400">Belum ada konten.</p>
-                    )}
-                  </div>
-                  {visibleTopics.length > 0 && (
-                    <div className="xl:col-span-5">
-                      <KeyTopicsBox title={keyTopicsTitle} topics={visibleTopics} />
-                    </div>
-                  )}
-                </div>
-                {gallery.length > 0 && (
-                  <div className="mt-10">
-                    <GallerySection label={galleryLabel} title={galleryTitle} images={gallery} />
-                  </div>
-                )}
-              </div>
-            )}
-            {/* The editors unmount when switching tabs, so submit the value from state */}
-            <input type="hidden" name="content" value={content} />
-            {errors?.content && (
-              <p className="border-t border-red-100 bg-red-50 px-5 py-2 text-xs font-medium text-red-600">
-                {errors.content[0]}
-              </p>
-            )}
-          </Card>
+                  <span className="min-w-0">
+                    <span className="flex items-center gap-2 text-sm font-bold">
+                      <span
+                        className={`rounded px-1.5 py-0.5 text-[10px] font-extrabold uppercase ${
+                          active ? "bg-[#C7974C] text-[#0b1329]" : "bg-slate-100 text-slate-500"
+                        }`}
+                      >
+                        {t.value}
+                      </span>
+                      {t.label}
+                    </span>
+                    <span className={`block truncate text-[11px] ${active ? "text-slate-300" : "text-slate-400"}`}>
+                      {t.hint}
+                    </span>
+                  </span>
+                  {tabErrors ? (
+                    <span className="shrink-0 rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white">
+                      Periksa
+                    </span>
+                  ) : t.value === "id" ? (
+                    <span
+                      className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                        idTranslated ? "bg-emerald-100 text-emerald-700" : active ? "bg-white/15 text-white" : "bg-slate-100 text-slate-500"
+                      }`}
+                    >
+                      {idTranslated ? "Terisi" : "Belum"}
+                    </span>
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
 
-          <Card
-            title="Key Topics"
-            description="Kotak ringkasan di samping konten. Kosongkan semua poin untuk menyembunyikannya."
-            actions={
-              <span className="rounded-md bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-500">
-                {visibleTopics.length} poin
-              </span>
-            }
-          >
-            <KeyTopicsEditor
-              title={keyTopicsTitle}
-              topics={keyTopics}
-              onTitleChange={setKeyTopicsTitle}
-              onTopicsChange={setKeyTopics}
-              titleError={errors?.key_topics_title}
-            />
-          </Card>
-
-          <Card
-            title="Galeri"
-            description="Foto dokumentasi di bawah artikel. Kosongkan foto untuk menyembunyikannya."
-            actions={
-              <span className="rounded-md bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-500">
-                {gallery.length} foto
-              </span>
-            }
-          >
-            <GalleryEditor
-              label={galleryLabel}
-              title={galleryTitle}
-              images={gallery}
-              onLabelChange={setGalleryLabel}
-              onTitleChange={setGalleryTitle}
-              onImagesChange={setGallery}
-            />
-            {errors?.gallery && (
-              <p className="mt-3 text-xs font-medium text-red-600">{errors.gallery[0]}</p>
-            )}
-          </Card>
+          {renderLanguage("en")}
+          {renderLanguage("id")}
         </div>
 
         <aside className="space-y-6 lg:sticky lg:top-24">
@@ -584,6 +559,32 @@ export function ArticleForm({
               onChange={setThumbnail}
               error={errors?.thumbnail_url?.[0]}
             />
+            <div className="mt-4 space-y-3 border-t border-slate-100 pt-4">
+              <div>
+                <p className="text-xs font-semibold text-slate-700">Keterangan foto</p>
+                <p className="text-[11px] text-slate-400">
+                  Tampil di bawah foto header artikel. Opsional.
+                </p>
+              </div>
+              {(
+                [
+                  { lang: "en", name: "thumbnail_caption", placeholder: "e.g. Participants of the food safety training" },
+                  { lang: "id", name: "thumbnail_caption_id", placeholder: "mis. Peserta pelatihan food safety" },
+                ] as const
+              ).map((c) => (
+                <Field key={c.lang} label={c.lang.toUpperCase()} htmlFor={c.name} error={errors?.[c.name]}>
+                  <input
+                    id={c.name}
+                    name={c.name}
+                    value={caption[c.lang]}
+                    onChange={(e) => setCaption((all) => ({ ...all, [c.lang]: e.target.value }))}
+                    maxLength={255}
+                    placeholder={c.placeholder}
+                    className={inputClass}
+                  />
+                </Field>
+              ))}
+            </div>
           </Card>
         </aside>
       </div>

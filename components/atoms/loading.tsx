@@ -1,7 +1,7 @@
 // components/NewsSkeleton.tsx
 import React from "react";
 
-export function NewsSkeleton() {
+export function NewsSkeleton({ label }: { label: string }) {
   return (
     <div className="min-h-screen bg-[#f8fafc] py-16 px-6 lg:px-20 animate-pulse">
       <div className="max-w-6xl mx-auto space-y-10">
@@ -28,7 +28,7 @@ export function NewsSkeleton() {
         <div className="flex items-center justify-center space-x-3 pt-8">
           <div className="w-5 h-5 border-2 border-slate-300 border-t-[#C7974C] rounded-full animate-spin" />
           <span className="text-xs text-slate-400 font-medium tracking-wide">
-            Memuat Artikel Gama Putra Harmoni...
+            {label}
           </span>
         </div>
 

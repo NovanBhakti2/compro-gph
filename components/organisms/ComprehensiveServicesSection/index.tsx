@@ -1,33 +1,9 @@
 import React from "react";
+import type { Dictionary } from "@/lib/i18n/dictionaries/en";
 
-const expertiseList = [
-  {
-    title: "5S Methodology",
-    desc: "Implementing Seiri, Seiton, Seiso, Seiketsu, Shitsuke to enhance the workplace organization, productivity, and absolute operational discipline.",
-  },
-  {
-    title: "Halal Assurance System",
-    desc: "Complete guidance and support for Halal certification including strategic documentation, training, and full audit readiness.",
-  },
-  {
-    title: "Food Safety",
-    desc: "Comprehensive support for Good Manufacturing Practices (GMP), Hazard Analysis and Critical Control Points (HACCP), ISO 22000, and FSSC 22000 Certification systems to safeguard supply chain integrity.",
-  },
-  {
-    title: "Revenue Management",
-    desc: "Develop revenue management and E-commerce strategies through analytical reporting, budgeting, forecasting, and pricing optimization to maximize profitability.",
-  },
-  {
-    title: "Quality Assurance",
-    desc: "Developing and implementing quality systems, internal audits, and performance monitoring to ensure consistent product and service excellence.",
-  },
-  {
-    title: "License & Permits",
-    desc: "Assisting business in meeting regulatory requirements, including business licensing, food permits, and hospitality compliance documentations.",
-  },
-];
+export const ComprehensiveServicesSection = ({ dict }: { dict: Dictionary["expertise"] }) => {
+  const expertiseList = dict.items;
 
-export const ComprehensiveServicesSection = () => {
   return (
     <section className="py-24 px-6 lg:px-20 bg-[#0f1932] text-white">
       <div className="max-w-7xl mx-auto space-y-12">
@@ -35,11 +11,11 @@ export const ComprehensiveServicesSection = () => {
           <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-white/20 bg-white/5">
             <span className="w-1.5 h-1.5 rounded-full bg-[#C7974C]" />
             <span className="text-xs font-semibold text-[#C7974C] tracking-wide">
-              Expertise Directory
+              {dict.badge}
             </span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
-            Our Comprehensive Services
+            {dict.title}
           </h2>
         </div>
 

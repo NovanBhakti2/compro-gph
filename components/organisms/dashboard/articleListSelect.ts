@@ -2,6 +2,7 @@
 export const ARTICLE_LIST_SELECT = {
   id: true,
   title: true,
+  title_id: true,
   slug: true,
   status: true,
   updated_at: true,
