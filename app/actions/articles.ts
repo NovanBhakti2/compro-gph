@@ -34,6 +34,8 @@ const ArticleSchema = z.object({
       error: "Isi dengan URL (https://...) atau path (/content/...).",
     })
     .transform((v) => v || null),
+  thumbnail_caption: optionalText(255),
+  thumbnail_caption_id: optionalText(255),
   category_id: z.string().transform((v) => v || null),
   status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]),
   // "YYYY-MM-DD"; empty = set automatically when published
@@ -99,6 +101,8 @@ function parseArticle(formData: FormData) {
     excerpt: formData.get("excerpt") ?? "",
     content: formData.get("content") ?? "",
     thumbnail_url: formData.get("thumbnail_url") ?? "",
+    thumbnail_caption: formData.get("thumbnail_caption") ?? "",
+    thumbnail_caption_id: formData.get("thumbnail_caption_id") ?? "",
     category_id: formData.get("category_id") ?? "",
     status: formData.get("status") ?? "DRAFT",
     published_at: formData.get("published_at") ?? "",

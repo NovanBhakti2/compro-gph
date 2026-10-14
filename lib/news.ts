@@ -17,6 +17,7 @@ type TranslatableArticle = {
   key_topics: unknown;
   gallery_label: string | null;
   gallery_title: string | null;
+  thumbnail_caption: string | null;
   title_id: string | null;
   excerpt_id: string | null;
   content_id: string | null;
@@ -24,6 +25,7 @@ type TranslatableArticle = {
   key_topics_id: unknown;
   gallery_label_id: string | null;
   gallery_title_id: string | null;
+  thumbnail_caption_id: string | null;
 };
 
 /**
@@ -40,6 +42,7 @@ export function localizeArticle<T extends TranslatableArticle>(article: T, local
     key_topics_id,
     gallery_label_id,
     gallery_title_id,
+    thumbnail_caption_id,
     ...base
   } = article;
 
@@ -54,6 +57,7 @@ export function localizeArticle<T extends TranslatableArticle>(article: T, local
     key_topics: parseKeyTopics(key_topics_id).length ? key_topics_id : base.key_topics,
     gallery_label: gallery_label_id || base.gallery_label,
     gallery_title: gallery_title_id || base.gallery_title,
+    thumbnail_caption: thumbnail_caption_id || base.thumbnail_caption,
     translated: Boolean(content_id?.trim()),
   };
 }

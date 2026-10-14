@@ -16,6 +16,9 @@ model news {
   excerpt       String?     @db.VarChar(500)
   content       String
   thumbnail_url String?     @db.VarChar(500)
+  // Caption under the header photo (English / Indonesian)
+  thumbnail_caption    String? @db.VarChar(255)
+  thumbnail_caption_id String? @db.VarChar(255)
   status        NewsStatus  @default(DRAFT)
 
   // Kotak "Key Topics" di samping konten. key_topics: [{ title, description }]

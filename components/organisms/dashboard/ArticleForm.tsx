@@ -34,6 +34,8 @@ type LocalizedFields = {
 export type ArticleFormValues = {
   slug: string;
   thumbnail_url: string | null;
+  thumbnail_caption: string;
+  thumbnail_caption_id: string;
   category_id: string | null;
   status: Status;
   /** "YYYY-MM-DD" */
@@ -104,6 +106,10 @@ export function ArticleForm({
   // Auto-generate the slug from the English title only until it's edited by hand
   const [slugTouched, setSlugTouched] = useState(Boolean(initialValues?.slug));
   const [thumbnail, setThumbnail] = useState(initialValues?.thumbnail_url ?? "");
+  const [caption, setCaption] = useState({
+    en: initialValues?.thumbnail_caption ?? "",
+    id: initialValues?.thumbnail_caption_id ?? "",
+  });
   const [status, setStatus] = useState<Status>(initialValues?.status ?? "DRAFT");
   const [publishedAt, setPublishedAt] = useState(initialValues?.published_at ?? "");
   const [categoryId, setCategoryId] = useState(initialValues?.category_id ?? "");
@@ -553,6 +559,32 @@ export function ArticleForm({
               onChange={setThumbnail}
               error={errors?.thumbnail_url?.[0]}
             />
+            <div className="mt-4 space-y-3 border-t border-slate-100 pt-4">
+              <div>
+                <p className="text-xs font-semibold text-slate-700">Keterangan foto</p>
+                <p className="text-[11px] text-slate-400">
+                  Tampil di bawah foto header artikel. Opsional.
+                </p>
+              </div>
+              {(
+                [
+                  { lang: "en", name: "thumbnail_caption", placeholder: "e.g. Participants of the food safety training" },
+                  { lang: "id", name: "thumbnail_caption_id", placeholder: "mis. Peserta pelatihan food safety" },
+                ] as const
+              ).map((c) => (
+                <Field key={c.lang} label={c.lang.toUpperCase()} htmlFor={c.name} error={errors?.[c.name]}>
+                  <input
+                    id={c.name}
+                    name={c.name}
+                    value={caption[c.lang]}
+                    onChange={(e) => setCaption((all) => ({ ...all, [c.lang]: e.target.value }))}
+                    maxLength={255}
+                    placeholder={c.placeholder}
+                    className={inputClass}
+                  />
+                </Field>
+              ))}
+            </div>
           </Card>
         </aside>
       </div>

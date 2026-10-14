@@ -35,6 +35,8 @@ export default async function EditArticlePage({
       initialValues={{
         slug: article.slug,
         thumbnail_url: article.thumbnail_url,
+        thumbnail_caption: article.thumbnail_caption ?? "",
+        thumbnail_caption_id: article.thumbnail_caption_id ?? "",
         category_id: article.category_id,
         status: article.status,
         published_at: toDateInputValue(article.published_at),

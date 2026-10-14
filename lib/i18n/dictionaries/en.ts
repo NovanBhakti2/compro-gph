@@ -152,7 +152,7 @@ export const en = {
     badge: "Start the Conversation",
     title: "Ready to Elevate Your Organization's Standards?",
     text: "Our consultants are ready to help you navigate compliance, build internal capability, and achieve sustainable operational excellence — tailored to your industry.",
-    consult: "Arrange a Consultation",
+    consult: "Schedule Training & Consultation",
     explore: "Explore Our Services",
     stats: [
       { title: "ISO-Aligned", sub: "Standards we work with" },

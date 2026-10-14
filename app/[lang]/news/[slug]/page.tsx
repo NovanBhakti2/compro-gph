@@ -154,13 +154,21 @@ export default async function NewsDetailPage({ params }: PageProps) {
         </header>
 
         {article.thumbnail_url && (
-          <div className="w-full h-[360px] sm:h-[520px] rounded-3xl overflow-hidden bg-slate-200 shadow-sm border border-slate-100">
-            <img
-              src={article.thumbnail_url}
-              alt={article.title}
-              className="w-full h-full object-cover"
-            />
-          </div>
+          <figure className="space-y-3">
+            <div className="w-full h-[360px] sm:h-[520px] rounded-3xl overflow-hidden bg-slate-200 shadow-sm border border-slate-100">
+              <img
+                src={article.thumbnail_url}
+                alt={article.thumbnail_caption || article.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            {article.thumbnail_caption && (
+              <figcaption className="flex items-start gap-2 px-1 text-xs sm:text-sm text-slate-500 leading-relaxed">
+                <span className="mt-[0.45em] h-px w-5 shrink-0 bg-[#C7974C]" aria-hidden />
+                {article.thumbnail_caption}
+              </figcaption>
+            )}
+          </figure>
         )}
 
         <div
