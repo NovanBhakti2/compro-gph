@@ -16,6 +16,8 @@ const NAV: { section: string; items: { href: string; label: string; icon: IconNa
       { href: "/dashboard/articles", label: "Semua Artikel", icon: "articles" },
       { href: "/dashboard/articles/new", label: "Tulis Artikel", icon: "pen" },
       { href: "/dashboard/categories", label: "Kategori", icon: "tag" },
+      { href: "/dashboard/promos", label: "Pop-up Promo", icon: "megaphone" },
+      { href: "/dashboard/trainings", label: "Sertifikat", icon: "award" },
     ],
   },
   {
@@ -33,6 +35,9 @@ function isActive(pathname: string, href: string) {
     // Edit pages (/dashboard/articles/[id]) belong to "Semua Artikel"
     return pathname.startsWith(href) && pathname !== "/dashboard/articles/new";
   }
+  if (href === "/dashboard/promos") return pathname.startsWith(href);
+  // Trainers are managed from the certificate pages
+  if (href === "/dashboard/trainings") return pathname.startsWith(href) || pathname.startsWith("/dashboard/trainers");
   return pathname === href;
 }
 

@@ -21,7 +21,12 @@ const serviceItems = [
   { label: "In-House Training", href: "/services/training" },
 ];
 
-type NavbarProps = { lang: Locale; dict: Dictionary["nav"] };
+type NavbarProps = {
+  lang: Locale;
+  dict: Dictionary["nav"];
+  /** Hidden while no training is open for sign-up */
+  showTrainings: boolean;
+};
 
 /** EN | ID switch that keeps the visitor on the same page. */
 function LanguageSwitch({ lang, label, dark }: { lang: Locale; label: string; dark?: boolean }) {
@@ -56,7 +61,7 @@ function LanguageSwitch({ lang, label, dark }: { lang: Locale; label: string; da
   );
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ lang, dict }) => {
+export const Navbar: React.FC<NavbarProps> = ({ lang, dict, showTrainings }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isServiceDropdownOpen, setIsServiceDropdownOpen] = useState(false);
   const [isMobileServiceOpen, setIsMobileServiceOpen] = useState(false);
@@ -197,6 +202,11 @@ export const Navbar: React.FC<NavbarProps> = ({ lang, dict }) => {
           <NavbarItem className="text-white/70 hover:text-[#C7974C]">
             <NavLink href={href("/news")} label={dict.news} />
           </NavbarItem>
+          {showTrainings && (
+            <NavbarItem className="text-white/70 hover:text-[#C7974C]">
+              <NavLink href={href("/register")} label={dict.trainings} />
+            </NavbarItem>
+          )}
         </NavbarContent>
 
         {!isSidebarOpen && (
@@ -379,6 +389,23 @@ export const Navbar: React.FC<NavbarProps> = ({ lang, dict }) => {
                   <span className="w-1.5 h-1.5 rounded-full bg-white" />
                 )}
               </Link>
+
+              {showTrainings && (
+              <Link
+                href={href("/register")}
+                onClick={() => setIsSidebarOpen(false)}
+                className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                  pathname === "/register"
+                    ? "bg-[#C7974C] text-white shadow-md shadow-[#C7974C]/20"
+                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                }`}
+              >
+                <span>{dict.trainings}</span>
+                {pathname === "/register" && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                )}
+              </Link>
+              )}
             </nav>
 
             <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-6">
