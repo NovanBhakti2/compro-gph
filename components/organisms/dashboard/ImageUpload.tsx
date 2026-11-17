@@ -9,9 +9,14 @@ type Props = {
   value: string;
   onChange: (url: string) => void;
   error?: string;
+  /** "flyer": taller box with the whole image visible (portrait posters); "signature": wide box, PNG/JPG only */
+  variant?: "cover" | "flyer" | "signature";
 };
 
-export function ImageUpload({ name, value, onChange, error }: Props) {
+export function ImageUpload({ name, value, onChange, error, variant = "cover" }: Props) {
+  const signature = variant === "signature";
+  // Both show the whole image instead of cropping it
+  const flyer = variant === "flyer" || signature;
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -47,7 +52,7 @@ export function ImageUpload({ name, value, onChange, error }: Props) {
           handleFile(e.dataTransfer.files[0]);
         }}
         disabled={uploading}
-        className={`group relative block aspect-[4/3] w-full overflow-hidden rounded-xl border border-dashed transition ${
+        className={`group relative block ${signature ? "aspect-[3/1] bg-white" : flyer ? "aspect-[3/4] bg-slate-100" : "aspect-[4/3]"} w-full overflow-hidden rounded-xl border border-dashed transition ${
           value ? "border-transparent" : ""
         } ${
           dragging
@@ -57,7 +62,7 @@ export function ImageUpload({ name, value, onChange, error }: Props) {
       >
         {value ? (
           <>
-            <img src={value} alt="" className="h-full w-full object-cover" />
+            <img src={value} alt="" className={`h-full w-full ${flyer ? "object-contain" : "object-cover"}`} />
             <span className="absolute inset-0 flex items-center justify-center gap-1.5 bg-[#0b1329]/60 text-xs font-semibold text-white opacity-0 transition-opacity group-hover:opacity-100">
               <Icon name="image" />
               Ganti gambar
@@ -71,7 +76,9 @@ export function ImageUpload({ name, value, onChange, error }: Props) {
             <span className="text-xs font-semibold text-slate-600">
               Klik atau seret gambar ke sini
             </span>
-            <span className="text-[11px] text-slate-400">JPG, PNG, WEBP, GIF. Maks 4 MB</span>
+            <span className="text-[11px] text-slate-400">
+              {signature ? "PNG latar transparan (disarankan) atau JPG. Maks 4 MB" : "JPG, PNG, WEBP, GIF. Maks 4 MB"}
+            </span>
           </span>
         )}
         {uploading && (
@@ -84,7 +91,7 @@ export function ImageUpload({ name, value, onChange, error }: Props) {
       <input
         ref={inputRef}
         type="file"
-        accept="image/jpeg,image/png,image/webp,image/gif"
+        accept={signature ? "image/png,image/jpeg" : "image/jpeg,image/png,image/webp,image/gif"}
         className="hidden"
         onChange={(e) => handleFile(e.target.files?.[0])}
       />

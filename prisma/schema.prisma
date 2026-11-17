@@ -9,26 +9,26 @@ datasource db {
 }
 
 model news {
-  id            String      @id @default(uuid()) @db.VarChar(36)
-  title         String      @db.VarChar(255)
-  slug          String      @unique @db.VarChar(255)
+  id                   String     @id @default(uuid()) @db.VarChar(36)
+  title                String     @db.VarChar(255)
+  slug                 String     @unique @db.VarChar(255)
   // Kalimat ringkasan di bawah judul artikel & di kartu berita
-  excerpt       String?     @db.VarChar(500)
-  content       String
-  thumbnail_url String?     @db.VarChar(500)
+  excerpt              String?    @db.VarChar(500)
+  content              String
+  thumbnail_url        String?    @db.VarChar(500)
   // Caption under the header photo (English / Indonesian)
-  thumbnail_caption    String? @db.VarChar(255)
-  thumbnail_caption_id String? @db.VarChar(255)
-  status        NewsStatus  @default(DRAFT)
+  thumbnail_caption    String?    @db.VarChar(255)
+  thumbnail_caption_id String?    @db.VarChar(255)
+  status               NewsStatus @default(DRAFT)
 
   // Kotak "Key Topics" di samping konten. key_topics: [{ title, description }]
   key_topics_title String? @db.VarChar(255)
   key_topics       Json?
 
   // Galeri foto di bawah konten. gallery: [{ url, alt }]
-  gallery_label    String?  @db.VarChar(100)
-  gallery_title    String?  @db.VarChar(255)
-  gallery          Json?
+  gallery_label String? @db.VarChar(100)
+  gallery_title String? @db.VarChar(255)
+  gallery       Json?
 
   // Indonesian version (shown on /id). Empty fields fall back to the English
   // ones above. Slug, status, date, category, thumbnail and photos are shared.
@@ -40,15 +40,15 @@ model news {
   gallery_label_id    String? @db.VarChar(100)
   gallery_title_id    String? @db.VarChar(255)
 
-  author_id     String      @db.VarChar(36)
-  users         users       @relation(fields: [author_id], references: [id], onDelete: Cascade, map: "fk_news_author")
+  author_id String @db.VarChar(36)
+  users     users  @relation(fields: [author_id], references: [id], onDelete: Cascade, map: "fk_news_author")
 
-  category_id   String?     @db.VarChar(36)
-  categories    categories? @relation(fields: [category_id], references: [id], onDelete: SetNull, map: "fk_news_category")
+  category_id String?     @db.VarChar(36)
+  categories  categories? @relation(fields: [category_id], references: [id], onDelete: SetNull, map: "fk_news_category")
 
-  published_at  DateTime?
-  created_at    DateTime    @default(now())
-  updated_at    DateTime    @updatedAt
+  published_at DateTime?
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
 
   @@schema("companyprofile")
 }
@@ -61,7 +61,7 @@ model categories {
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
-  news        news[]
+  news news[]
 
   @@schema("companyprofile")
 }
@@ -75,7 +75,7 @@ model users {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  news       news[]
+  news news[]
 
   @@schema("companyprofile")
 }
@@ -93,5 +93,106 @@ enum Role {
   ADMIN
   EDITOR
 
+  @@schema("companyprofile")
+}
+
+// Pop-up flyer on the public site, managed from /dashboard/promos.
+// The newest active promo inside its date window is shown.
+model promos {
+  id           String     @id @default(uuid()) @db.VarChar(36)
+  title        String     @db.VarChar(255) // internal name, not shown to visitors
+  image_url    String     @db.VarChar(500)
+  image_url_id String?    @db.VarChar(500) // Indonesian flyer, falls back to image_url
+  cta_label    String?    @db.VarChar(100)
+  cta_label_id String?    @db.VarChar(100)
+  cta_url      String?    @db.VarChar(500)
+  starts_at    DateTime?
+  ends_at      DateTime?
+  show_on      String     @default("HOME") @db.VarChar(10) // pop-up pages: HOME | ALL
+  show_popup   Boolean    @default(true)
+  show_in_news Boolean    @default(true) // "Programs & Training" section on /news
+  // Linked training: the button opens its sign-up form (overrides cta_url)
+  training_id  String?    @db.VarChar(36)
+  training     trainings? @relation(fields: [training_id], references: [id], onDelete: SetNull)
+  is_active    Boolean    @default(false)
+  created_at   DateTime   @default(now())
+  updated_at   DateTime   @updatedAt
+
+  @@schema("companyprofile")
+}
+
+// A training whose participants claim their certificate through a QR link
+model trainings {
+  id                         String          @id @default(uuid()) @db.VarChar(36)
+  title                      String          @db.VarChar(200) // printed on the certificate
+  slug                       String          @unique @db.VarChar(80) // claim link: /claim/<slug>
+  starts_on                  DateTime        @db.Date
+  ends_on                    DateTime?       @db.Date
+  // Schedule shown to visitors (not on the certificate)
+  time_start                 String?         @db.VarChar(5) // "HH:MM" WIB
+  time_end                   String?         @db.VarChar(5)
+  location                   String?         @db.VarChar(200) // venue or "Online (Zoom)"
+  claim_until                DateTime? // claims close after this moment; null = until closed by hand
+  is_open                    Boolean         @default(true)
+  trainer_id                 String?         @db.VarChar(36) // null = template default (Hendi Gharnida, no signature)
+  trainer                    trainers?       @relation(fields: [trainer_id], references: [id], onDelete: SetNull)
+  registration_open          Boolean         @default(true) // public sign-up form (/register), until the training's last day
+  // Sign-ups are personal data: deleted automatically some time after the claim period
+  registrations_purged_at    DateTime?
+  registrations_purged_count Int?
+  created_at                 DateTime        @default(now())
+  updated_at                 DateTime        @updatedAt
+  certificates               certificates[]
+  registrations              registrations[]
+  promos                     promos[]
+
+  @@schema("companyprofile")
+}
+
+// Signs the certificates of the trainings they're assigned to
+model trainers {
+  id            String      @id @default(uuid()) @db.VarChar(36)
+  name          String      @db.VarChar(100)
+  title         String      @default("Trainer") @db.VarChar(100)
+  signature_url String?     @db.VarChar(500) // PNG with a transparent background
+  created_at    DateTime    @default(now())
+  updated_at    DateTime    @updatedAt
+  trainings     trainings[]
+
+  @@schema("companyprofile")
+}
+
+// Sign-ups for a training. Only registered emails can claim a certificate.
+model registrations {
+  id          String    @id @default(uuid()) @db.VarChar(36)
+  training_id String    @db.VarChar(36)
+  training    trainings @relation(fields: [training_id], references: [id], onDelete: Cascade)
+  name        String    @db.VarChar(100)
+  email       String    @db.VarChar(150)
+  email_key   String    @db.VarChar(150) // lowercased: one sign-up per email per training
+  phone       String    @db.VarChar(20)
+  created_at  DateTime  @default(now())
+
+  @@unique([training_id, email_key])
+  @@index([training_id])
+  @@schema("companyprofile")
+}
+
+model certificates {
+  id               String    @id @default(uuid()) @db.VarChar(36)
+  training_id      String    @db.VarChar(36)
+  training         trainings @relation(fields: [training_id], references: [id], onDelete: Cascade)
+  participant_name String    @db.VarChar(100)
+  contact          String?   @db.VarChar(150) // participant email (empty when added by an admin without one)
+  contact_key      String    @db.VarChar(150) // lowercased email: one claim per person per training
+  year             Int
+  seq              Int
+  number           String    @unique @db.VarChar(30) // 001/GPH/TRN/2026
+  code             String    @unique @db.VarChar(16) // verification link: /verify/<code>
+  created_at       DateTime  @default(now())
+
+  @@unique([training_id, contact_key])
+  @@unique([year, seq])
+  @@index([training_id])
   @@schema("companyprofile")
 }

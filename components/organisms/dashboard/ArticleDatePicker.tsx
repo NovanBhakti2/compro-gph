@@ -5,6 +5,8 @@ import { Calendar, DateField, DatePicker, I18nProvider, Label } from "@heroui/re
 
 type Props = {
   id: string;
+  /** Hidden input name submitted with the form */
+  name?: string;
   label: string;
   /** "YYYY-MM-DD" or "" */
   value: string;
@@ -25,7 +27,7 @@ function toCalendarDate(value: string): DateValue | null {
  * Submits through its own hidden input so the server action keeps receiving
  * the same `published_at` string as before.
  */
-export function ArticleDatePicker({ id, label, value, onChange, isInvalid }: Props) {
+export function ArticleDatePicker({ id, name = "published_at", label, value, onChange, isInvalid }: Props) {
   return (
     <I18nProvider locale="id-ID">
       <DatePicker
@@ -68,7 +70,7 @@ export function ArticleDatePicker({ id, label, value, onChange, isInvalid }: Pro
           </Calendar>
         </DatePicker.Popover>
       </DatePicker>
-      <input type="hidden" name="published_at" value={value} />
+      <input type="hidden" name={name} value={value} />
     </I18nProvider>
   );
 }
