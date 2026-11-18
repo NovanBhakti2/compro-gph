@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import * as z from "zod";
 import { prisma } from "@/lib/prisma";
-import { requireDashboardUser } from "@/lib/dal";
+import { requireAdmin } from "@/lib/dal";
 
 export type TrainerFormState =
   | {
@@ -42,7 +42,7 @@ function revalidateTrainers() {
 }
 
 export async function createTrainer(_state: TrainerFormState, formData: FormData): Promise<TrainerFormState> {
-  await requireDashboardUser();
+  await requireAdmin();
   const parsed = parseTrainer(formData);
   if (!parsed.success) return { errors: z.flattenError(parsed.error).fieldErrors };
   try {
@@ -56,7 +56,7 @@ export async function createTrainer(_state: TrainerFormState, formData: FormData
 }
 
 export async function updateTrainer(id: string, _state: TrainerFormState, formData: FormData): Promise<TrainerFormState> {
-  await requireDashboardUser();
+  await requireAdmin();
   const parsed = parseTrainer(formData);
   if (!parsed.success) return { errors: z.flattenError(parsed.error).fieldErrors };
   try {
@@ -70,7 +70,7 @@ export async function updateTrainer(id: string, _state: TrainerFormState, formDa
 }
 
 export async function deleteTrainer(id: string) {
-  await requireDashboardUser();
+  await requireAdmin();
   // Trainings keep their certificates and fall back to the template's default trainer
   await prisma.trainers.delete({ where: { id } }).catch(() => null);
   revalidateTrainers();

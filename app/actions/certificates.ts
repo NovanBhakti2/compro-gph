@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import * as z from "zod";
 import { prisma } from "@/lib/prisma";
-import { requireDashboardUser } from "@/lib/dal";
+import { requireAdmin } from "@/lib/dal";
 import {
   claimStatus,
   contactKey,
@@ -108,7 +108,7 @@ function parseTraining(formData: FormData) {
 }
 
 export async function createTraining(_state: FormState, formData: FormData): Promise<FormState> {
-  await requireDashboardUser();
+  await requireAdmin();
   const parsed = parseTraining(formData);
   if (!parsed.success) return { errors: z.flattenError(parsed.error).fieldErrors };
 
@@ -124,7 +124,7 @@ export async function createTraining(_state: FormState, formData: FormData): Pro
 }
 
 export async function updateTraining(id: string, _state: FormState, formData: FormData): Promise<FormState> {
-  await requireDashboardUser();
+  await requireAdmin();
   const parsed = parseTraining(formData);
   if (!parsed.success) return { errors: z.flattenError(parsed.error).fieldErrors };
 
@@ -140,7 +140,7 @@ export async function updateTraining(id: string, _state: FormState, formData: Fo
 }
 
 export async function toggleTrainingClaims(id: string) {
-  await requireDashboardUser();
+  await requireAdmin();
   const training = await prisma.trainings.findUnique({ where: { id }, select: { is_open: true } });
   if (!training) return;
   await prisma.trainings.update({ where: { id }, data: { is_open: !training.is_open } });
@@ -149,7 +149,7 @@ export async function toggleTrainingClaims(id: string) {
 }
 
 export async function deleteTraining(id: string) {
-  await requireDashboardUser();
+  await requireAdmin();
   // Certificates go with it (cascade); their verification links stop working
   await prisma.trainings.delete({ where: { id } }).catch(() => null);
   revalidateTrainings();
@@ -159,7 +159,7 @@ export async function deleteTraining(id: string) {
 // ---------- Participants (dashboard) ----------
 
 export async function addParticipant(trainingId: string, _state: FormState, formData: FormData): Promise<FormState> {
-  await requireDashboardUser();
+  await requireAdmin();
   const parsed = z
     .object({
       participant_name: participantName,
@@ -185,7 +185,8 @@ export async function addParticipant(trainingId: string, _state: FormState, form
   const existing = await prisma.certificates.findUnique({
     where: { training_id_contact_key: { training_id: trainingId, contact_key: key } },
   });
-  if (existing) return { errors: { contact: [`Email ini sudah punya sertifikat atas nama ${existing.participant_name}.`] } };
+  if (existing)
+    return { errors: { contact: [`Email ini sudah punya sertifikat atas nama ${existing.participant_name}.`] } };
 
   let cert: Certificate;
   try {
@@ -200,17 +201,19 @@ export async function addParticipant(trainingId: string, _state: FormState, form
 }
 
 export async function renameCertificate(id: string, name: string): Promise<{ error?: string }> {
-  await requireDashboardUser();
+  await requireAdmin();
   const parsed = participantName.safeParse(name);
   if (!parsed.success) return { error: parsed.error.issues[0]?.message };
-  const cert = await prisma.certificates.update({ where: { id }, data: { participant_name: parsed.data } }).catch(() => null);
+  const cert = await prisma.certificates
+    .update({ where: { id }, data: { participant_name: parsed.data } })
+    .catch(() => null);
   if (!cert) return { error: "Sertifikat tidak ditemukan." };
   revalidatePath(`/dashboard/trainings/${cert.training_id}`);
   return {};
 }
 
 export async function resendCertificateEmail(id: string): Promise<{ error?: string }> {
-  await requireDashboardUser();
+  await requireAdmin();
   if (!isEmailEnabled()) return { error: "Pengiriman email belum diaktifkan (RESEND_API_KEY belum diisi)." };
   const cert: CertificateWithTraining | null = await prisma.certificates.findUnique({
     where: { id },
@@ -221,7 +224,7 @@ export async function resendCertificateEmail(id: string): Promise<{ error?: stri
 }
 
 export async function deleteCertificate(id: string) {
-  await requireDashboardUser();
+  await requireAdmin();
   const cert = await prisma.certificates.delete({ where: { id } }).catch(() => null);
   if (cert) revalidatePath(`/dashboard/trainings/${cert.training_id}`);
 }
@@ -259,11 +262,14 @@ export async function claimCertificate(slug: string, _state: ClaimState, formDat
   let emailed = false;
   if (!cert) {
     // Certificates are only for people who signed up for this training
-    const registration = await prisma.registrations.findUnique({
+    const registration: { status: string } | null = await prisma.registrations.findUnique({
       where: { training_id_email_key: { training_id: training.id, email_key: key } },
-      select: { id: true },
+      select: { status: true },
     });
     if (!registration) return { message: "not-registered" };
+    // ...and whom an admin approved
+    if (registration.status === "PENDING") return { message: "pending" };
+    if (registration.status !== "APPROVED") return { message: "rejected" };
     try {
       cert = await issueCertificate(training, parsed.data.participant_name, parsed.data.contact, key);
     } catch (error) {

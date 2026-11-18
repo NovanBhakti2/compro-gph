@@ -1,13 +1,13 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { requireDashboardUser } from "@/lib/dal";
+import { requireAdmin } from "@/lib/dal";
 import { updateTraining } from "@/app/actions/certificates";
 import { dateToInput, timeToInput, type Trainer, type Training } from "@/lib/certificates";
 import { toDateInputValue } from "@/lib/promos";
 import { TrainingForm } from "@/components/organisms/dashboard/TrainingForm";
 
 export default async function EditTrainingPage({ params }: { params: Promise<{ id: string }> }) {
-  await requireDashboardUser();
+  await requireAdmin();
   const { id } = await params;
   const training: Training | null = await prisma.trainings.findUnique({ where: { id } });
   if (!training) notFound();

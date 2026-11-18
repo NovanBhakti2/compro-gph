@@ -1,12 +1,12 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { requireDashboardUser } from "@/lib/dal";
+import { requireAdmin } from "@/lib/dal";
 import { updatePromo } from "@/app/actions/promos";
 import { PromoForm } from "@/components/organisms/dashboard/PromoForm";
 import { getPromoTrainingOptions, toDateInputValue, type Promo } from "@/lib/promos";
 
 export default async function EditPromoPage({ params }: { params: Promise<{ id: string }> }) {
-  await requireDashboardUser();
+  await requireAdmin();
   const { id } = await params;
   const promo: Promo | null = await prisma.promos.findUnique({ where: { id } });
   if (!promo) notFound();

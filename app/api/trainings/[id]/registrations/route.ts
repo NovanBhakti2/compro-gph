@@ -13,9 +13,12 @@ const registeredFormat = new Intl.DateTimeFormat("id-ID", {
   timeZone: "Asia/Jakarta",
 });
 
+const STATUS_LABEL: Record<string, string> = { PENDING: "Menunggu", APPROVED: "Disetujui", REJECTED: "Ditolak" };
+
 /** Sign-ups of a training as an Excel file (dashboard only). */
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
-  if (!(await getDashboardUser())) return new Response("Unauthorized", { status: 401 });
+  // Trainings and certificates are admin-only
+  if ((await getDashboardUser())?.role !== "ADMIN") return new Response("Unauthorized", { status: 401 });
   const { id } = await params;
   const training: (Training & { registrations: Registration[]; certificates: Certificate[] }) | null =
     await prisma.trainings.findUnique({
@@ -26,7 +29,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
 
   const certificates = new Map(training.certificates.map((c) => [c.contact_key, c]));
   const rows = [
-    ["No", "Nama", "Email", "No. HP", "Tanggal daftar", "Sertifikat", "No. sertifikat"],
+    ["No", "Nama", "Email", "No. HP", "Tanggal daftar", "Status", "Sertifikat", "No. sertifikat"],
     ...training.registrations.map((r, i) => {
       const cert = certificates.get(contactKey(r.email));
       return [
@@ -35,12 +38,13 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
         r.email,
         formatPhone(r.phone),
         registeredFormat.format(r.created_at),
+        STATUS_LABEL[r.status] ?? r.status,
         cert ? "Sudah klaim" : "Belum klaim",
         cert?.number ?? "",
       ];
     }),
   ];
-  const file = buildXlsx("Pendaftar", rows, [5, 30, 32, 18, 22, 14, 22]);
+  const file = buildXlsx("Pendaftar", rows, [5, 30, 32, 18, 22, 12, 14, 22]);
 
   return new Response(new Uint8Array(file), {
     headers: {

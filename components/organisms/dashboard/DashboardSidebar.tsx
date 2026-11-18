@@ -8,7 +8,9 @@ import { Icon, type IconName } from "./ui";
 
 type Props = { user: { name: string; email: string; role: string } };
 
-const NAV: { section: string; items: { href: string; label: string; icon: IconName; external?: boolean }[] }[] = [
+type NavItem = { href: string; label: string; icon: IconName; external?: boolean; adminOnly?: boolean };
+
+const NAV: { section: string; items: NavItem[] }[] = [
   {
     section: "Konten",
     items: [
@@ -16,8 +18,9 @@ const NAV: { section: string; items: { href: string; label: string; icon: IconNa
       { href: "/dashboard/articles", label: "Semua Artikel", icon: "articles" },
       { href: "/dashboard/articles/new", label: "Tulis Artikel", icon: "pen" },
       { href: "/dashboard/categories", label: "Kategori", icon: "tag" },
-      { href: "/dashboard/promos", label: "Pop-up Promo", icon: "megaphone" },
-      { href: "/dashboard/trainings", label: "Sertifikat", icon: "award" },
+      // Editors handle articles only
+      { href: "/dashboard/promos", label: "Pop-up Promo", icon: "megaphone", adminOnly: true },
+      { href: "/dashboard/trainings", label: "Sertifikat", icon: "award", adminOnly: true },
     ],
   },
   {
@@ -68,10 +71,7 @@ export function DashboardSidebar({ user }: Props) {
       </div>
 
       {open && (
-        <div
-          className="fixed inset-0 z-40 bg-[#0b1329]/50 backdrop-blur-sm lg:hidden"
-          onClick={() => setOpen(false)}
-        />
+        <div className="fixed inset-0 z-40 bg-[#0b1329]/50 backdrop-blur-sm lg:hidden" onClick={() => setOpen(false)} />
       )}
 
       <aside
@@ -85,9 +85,7 @@ export function DashboardSidebar({ user }: Props) {
           </div>
           <div className="min-w-0 leading-tight">
             <p className="truncate text-sm font-extrabold text-white">Gama Putra Harmoni</p>
-            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#C7974C]">
-              Content Dashboard
-            </p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#C7974C]">Content Dashboard</p>
           </div>
           <button
             type="button"
@@ -105,31 +103,26 @@ export function DashboardSidebar({ user }: Props) {
               <p className="px-3 pb-1 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
                 {group.section}
               </p>
-              {group.items.map((item) => {
-                const active = !item.external && isActive(pathname, item.href);
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    target={item.external ? "_blank" : undefined}
-                    aria-current={active ? "page" : undefined}
-                    className={`relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                      active
-                        ? "bg-white/[0.07] text-white"
-                        : "text-slate-400 hover:bg-white/[0.04] hover:text-white"
-                    }`}
-                  >
-                    {active && (
-                      <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-r-full bg-[#C7974C]" />
-                    )}
-                    <Icon
-                      name={item.icon}
-                      className={`h-[18px] w-[18px] ${active ? "text-[#C7974C]" : ""}`}
-                    />
-                    {item.label}
-                  </Link>
-                );
-              })}
+              {group.items
+                .filter((item) => !item.adminOnly || user.role === "ADMIN")
+                .map((item) => {
+                  const active = !item.external && isActive(pathname, item.href);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      target={item.external ? "_blank" : undefined}
+                      aria-current={active ? "page" : undefined}
+                      className={`relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                        active ? "bg-white/[0.07] text-white" : "text-slate-400 hover:bg-white/[0.04] hover:text-white"
+                      }`}
+                    >
+                      {active && <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-r-full bg-[#C7974C]" />}
+                      <Icon name={item.icon} className={`h-[18px] w-[18px] ${active ? "text-[#C7974C]" : ""}`} />
+                      {item.label}
+                    </Link>
+                  );
+                })}
             </div>
           ))}
         </nav>

@@ -101,42 +101,92 @@ export function certificateEmail(data: {
   return { subject, html, text };
 }
 
-/** Sign-up confirmation, bilingual like the certificate email. */
-export function registrationEmail(data: { name: string; trainingTitle: string; date: string; location?: string | null }) {
+type TrainingMail = {
+  name: string;
+  trainingTitle: string;
+  /** Date, plus the time when set */
+  date: string;
+  location?: string | null;
+};
+
+/** Shared frame of the sign-up emails: header, greeting, training box, then the given paragraphs. */
+function trainingMailHtml(data: TrainingMail, heading: string, idText: string, after: string, enText: string) {
   const name = escapeHtml(data.name);
   const title = escapeHtml(data.trainingTitle);
-  const date = escapeHtml(data.date);
-  const subject = `Pendaftaran diterima: ${data.trainingTitle}`;
-  const html = `<!doctype html>
+  const location = data.location
+    ? `<br><span style="font-size:13px;color:#64748b">${escapeHtml(data.location)}</span>`
+    : "";
+  return `<!doctype html>
 <html><body style="margin:0;background:#f5f6f8;font-family:Arial,Helvetica,sans-serif;color:#1e293b">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f5f6f8;padding:32px 12px">
 <tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:16px;overflow:hidden">
   <tr><td style="background:#0f1932;padding:24px 28px">
     <p style="margin:0;color:#C7974C;font-size:12px;font-weight:bold;letter-spacing:1.5px">PT. GAMA PUTRA HARMONI</p>
-    <p style="margin:6px 0 0;color:#ffffff;font-size:20px;font-weight:bold">Pendaftaran diterima</p>
+    <p style="margin:6px 0 0;color:#ffffff;font-size:20px;font-weight:bold">${escapeHtml(heading)}</p>
   </td></tr>
   <tr><td style="padding:28px">
     <p style="margin:0 0 14px;font-size:15px">Halo <b>${name}</b>,</p>
-    <p style="margin:0 0 18px;font-size:14px;line-height:1.6">Terima kasih, pendaftaran Anda untuk pelatihan berikut sudah kami terima:</p>
+    <p style="margin:0 0 18px;font-size:14px;line-height:1.6">${idText}</p>
     <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;background:#fbf8f2;border:1px solid #ecdcbf;border-radius:12px">
-      <tr><td style="padding:14px 18px;font-size:15px;color:#0f1932"><b>${title}</b><br><span style="font-size:13px;color:#64748b">${date}</span>${data.location ? `<br><span style="font-size:13px;color:#64748b">${escapeHtml(data.location)}</span>` : ""}</td></tr>
+      <tr><td style="padding:14px 18px;font-size:15px;color:#0f1932"><b>${title}</b><br><span style="font-size:13px;color:#64748b">${escapeHtml(data.date)}</span>${location}</td></tr>
     </table>
-    <p style="margin:18px 0 22px;font-size:13px;line-height:1.6;color:#475569">Setelah pelatihan, scan QR yang ditampilkan trainer untuk klaim sertifikat. <b>Gunakan email ini</b> saat klaim, karena sertifikat hanya bisa diklaim oleh email yang terdaftar.</p>
+    <p style="margin:18px 0 22px;font-size:13px;line-height:1.6;color:#475569">${after}</p>
     <hr style="border:none;border-top:1px solid #e2e8f0;margin:0 0 18px">
-    <p style="margin:0;font-size:12px;line-height:1.6;color:#64748b">Hello ${name}, your registration for <b>${title}</b> (${date}) has been received. After the training, scan the QR code to claim your certificate using this email address.</p>
+    <p style="margin:0;font-size:12px;line-height:1.6;color:#64748b">Hello ${name}, ${enText}</p>
   </td></tr>
 </table>
 </td></tr></table>
 </body></html>`;
-  const text = [
+}
+
+const trainingMailText = (data: TrainingMail, lines: string[]) =>
+  [
     `Halo ${data.name},`,
     ``,
-    `Pendaftaran Anda untuk pelatihan ${data.trainingTitle} (${data.date}) sudah kami terima.`,
+    ...lines,
+    ``,
+    `${data.trainingTitle}`,
+    data.date,
     ...(data.location ? [`Lokasi: ${data.location}`] : []),
-    `Setelah pelatihan, scan QR untuk klaim sertifikat menggunakan email ini.`,
     ``,
     `PT. Gama Putra Harmoni`,
   ].join("\n");
-  return { subject, html, text };
+
+/** Sent right after signing up on the website: received, waiting for approval. */
+export function registrationEmail(data: TrainingMail) {
+  const title = escapeHtml(data.trainingTitle);
+  return {
+    subject: `Pendaftaran diterima: ${data.trainingTitle}`,
+    html: trainingMailHtml(
+      data,
+      "Pendaftaran diterima",
+      "Terima kasih, pendaftaran Anda untuk pelatihan berikut sudah kami terima dan <b>sedang menunggu persetujuan</b>:",
+      "Kami akan mengirim email lagi setelah pendaftaran Anda disetujui.",
+      `your registration for <b>${title}</b> has been received and is awaiting approval. We will email you again once it is approved.`,
+    ),
+    text: trainingMailText(data, [
+      `Pendaftaran Anda sudah kami terima dan sedang menunggu persetujuan.`,
+      `Kami akan mengirim email lagi setelah pendaftaran Anda disetujui.`,
+    ]),
+  };
+}
+
+/** Sent when an admin approves the sign-up. */
+export function approvalEmail(data: TrainingMail) {
+  const title = escapeHtml(data.trainingTitle);
+  return {
+    subject: `Pendaftaran disetujui: ${data.trainingTitle}`,
+    html: trainingMailHtml(
+      data,
+      "Pendaftaran disetujui",
+      "Selamat, pendaftaran Anda untuk pelatihan berikut <b>sudah disetujui</b>. Sampai jumpa di pelatihan!",
+      "Setelah pelatihan, scan QR yang ditampilkan trainer untuk klaim sertifikat. <b>Gunakan email ini</b> saat klaim, karena sertifikat hanya bisa diklaim oleh email yang terdaftar.",
+      `your registration for <b>${title}</b> has been approved. After the training, scan the QR code to claim your certificate using this email address.`,
+    ),
+    text: trainingMailText(data, [
+      `Pendaftaran Anda sudah disetujui. Sampai jumpa di pelatihan!`,
+      `Setelah pelatihan, scan QR dari trainer untuk klaim sertifikat dengan email ini.`,
+    ]),
+  };
 }

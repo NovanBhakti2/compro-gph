@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { requireDashboardUser } from "@/lib/dal";
+import { requireAdmin } from "@/lib/dal";
 import type { Trainer } from "@/lib/certificates";
 import { DeleteTrainerButton } from "@/components/organisms/dashboard/TrainingClient";
 import { Card, EmptyState, Icon, PageHeader, buttonClass } from "@/components/organisms/dashboard/ui";
 
 export default async function TrainersPage() {
-  await requireDashboardUser();
+  await requireAdmin();
   const trainers: (Trainer & { _count: { trainings: number } })[] = await prisma.trainers.findMany({
     orderBy: { name: "asc" },
     include: { _count: { select: { trainings: true } } },
