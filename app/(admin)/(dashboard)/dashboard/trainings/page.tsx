@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { requireDashboardUser } from "@/lib/dal";
+import { requireAdmin } from "@/lib/dal";
 import { claimStatus, formatTrainingDate, type Training } from "@/lib/certificates";
 import { purgeExpiredRegistrations } from "@/lib/registrations";
 import { TrainingStatusBadge } from "@/components/organisms/dashboard/TrainingStatusBadge";
 import { Card, EmptyState, Icon, PageHeader, buttonClass } from "@/components/organisms/dashboard/ui";
 
 export default async function TrainingsPage() {
-  await requireDashboardUser();
+  await requireAdmin();
   // Also runs daily from the cron
   await purgeExpiredRegistrations();
   const trainings: (Training & { _count: { certificates: number; registrations: number } })[] =

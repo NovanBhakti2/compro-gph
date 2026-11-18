@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { requireDashboardUser } from "@/lib/dal";
+import { requireAdmin } from "@/lib/dal";
 import { promoStatus, type Promo, type PromoStatus } from "@/lib/promos";
 import { PromoActions } from "@/components/organisms/dashboard/PromoActions";
 import { Card, EmptyState, Icon, PageHeader, buttonClass } from "@/components/organisms/dashboard/ui";
@@ -34,7 +34,7 @@ function placement(p: Promo) {
 }
 
 export default async function PromosPage() {
-  await requireDashboardUser();
+  await requireAdmin();
   const promos: Promo[] = await prisma.promos.findMany({ orderBy: { updated_at: "desc" } });
   const now = new Date();
   const livePopups = promos.filter((p) => p.show_popup && promoStatus(p, now) === "LIVE").length;

@@ -1,9 +1,25 @@
 import type { Prisma, registrations } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { SITE } from "@/lib/site";
-import { dateFromInput, dateToInput, type Training, type TrainingWithTrainer } from "@/lib/certificates";
+import {
+  dateFromInput,
+  dateToInput,
+  formatTrainingDate,
+  formatTrainingTime,
+  type Training,
+  type TrainingWithTrainer,
+} from "@/lib/certificates";
 
 export type Registration = registrations;
+
+/** Website sign-ups start PENDING; only APPROVED people can claim a certificate. */
+export type RegistrationStatus = "PENDING" | "APPROVED" | "REJECTED";
+
+/** "17–18 November 2026 · 09:00–16:00 WIB" (the time only when set). */
+export const trainingWhen = (training: Training, locale: string) =>
+  [formatTrainingDate(training.starts_on, training.ends_on, locale), formatTrainingTime(training)]
+    .filter(Boolean)
+    .join(" · ");
 
 /** Sign-ups are kept this long after the claim deadline, then deleted. */
 export const RETENTION_DAYS = 30;

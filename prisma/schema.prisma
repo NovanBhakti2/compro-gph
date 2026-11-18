@@ -171,6 +171,11 @@ model registrations {
   email       String    @db.VarChar(150)
   email_key   String    @db.VarChar(150) // lowercased: one sign-up per email per training
   phone       String    @db.VarChar(20)
+  // Website sign-ups wait for an admin: PENDING | APPROVED | REJECTED.
+  // Only APPROVED people can claim a certificate.
+  status      String    @default("PENDING") @db.VarChar(10)
+  decided_at  DateTime? // approved or rejected
+  notified_at DateTime? // approval email sent
   created_at  DateTime  @default(now())
 
   @@unique([training_id, email_key])

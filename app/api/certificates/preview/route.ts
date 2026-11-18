@@ -8,7 +8,8 @@ import { renderCertificate } from "@/lib/certificate/pdf";
  * /api/certificates/preview?name=…&title=…&signature=…
  */
 export async function GET(request: Request) {
-  if (!(await getDashboardUser())) return new Response("Unauthorized", { status: 401 });
+  // Trainings and certificates are admin-only
+  if ((await getDashboardUser())?.role !== "ADMIN") return new Response("Unauthorized", { status: 401 });
 
   const params = new URL(request.url).searchParams;
   const name = params.get("name")?.trim().slice(0, 100);

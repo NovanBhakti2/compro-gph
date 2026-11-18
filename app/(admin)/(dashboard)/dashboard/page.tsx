@@ -33,30 +33,46 @@ function trainingPhase(t: TrainingRow, now: Date) {
 
 export default async function DashboardPage() {
   const user = await requireDashboardUser();
+  // Editors only work on articles: no training or promo data for them
+  const isAdmin = user.role === "ADMIN";
   const now = new Date();
   const monthStart = new Date(
-    `${new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jakarta", year: "numeric", month: "2-digit" }).format(now)}-01T00:00:00+07:00`
+    `${new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jakarta", year: "numeric", month: "2-digit" }).format(now)}-01T00:00:00+07:00`,
   );
 
-  const [recent, drafts, counts, trainings, certificateCount, certificatesThisMonth, promos] = await Promise.all([
-    prisma.news.findMany({ orderBy: { updated_at: "desc" }, take: 5, select: ARTICLE_LIST_SELECT }),
-    prisma.news.findMany({
-      where: { status: "DRAFT" },
-      orderBy: { updated_at: "desc" },
-      take: 4,
-      select: { id: true, title: true, updated_at: true },
-    }),
-    prisma.news.groupBy({ by: ["status"], _count: { _all: true } }),
-    // Trainings whose sign-up data still exists: the ones still in progress
-    prisma.trainings.findMany({
-      where: { registrations_purged_at: null },
-      orderBy: { starts_on: "asc" },
-      include: { _count: { select: { registrations: true, certificates: true } } },
-    }) as Promise<TrainingRow[]>,
-    prisma.certificates.count(),
-    prisma.certificates.count({ where: { created_at: { gte: monthStart } } }),
-    prisma.promos.findMany({ where: { is_active: true }, orderBy: { updated_at: "desc" } }) as Promise<Promo[]>,
-  ]);
+  const [recent, drafts, counts, trainings, certificateCount, certificatesThisMonth, promos, pendingGroups] =
+    await Promise.all([
+      prisma.news.findMany({ orderBy: { updated_at: "desc" }, take: 5, select: ARTICLE_LIST_SELECT }),
+      prisma.news.findMany({
+        where: { status: "DRAFT" },
+        orderBy: { updated_at: "desc" },
+        take: 4,
+        select: { id: true, title: true, updated_at: true },
+      }),
+      prisma.news.groupBy({ by: ["status"], _count: { _all: true } }),
+      // Trainings whose sign-up data still exists: the ones still in progress
+      isAdmin
+        ? (prisma.trainings.findMany({
+            where: { registrations_purged_at: null },
+            orderBy: { starts_on: "asc" },
+            include: { _count: { select: { registrations: true, certificates: true } } },
+          }) as Promise<TrainingRow[]>)
+        : ([] as TrainingRow[]),
+      isAdmin ? (prisma.certificates.count() as Promise<number>) : 0,
+      isAdmin ? (prisma.certificates.count({ where: { created_at: { gte: monthStart } } }) as Promise<number>) : 0,
+      isAdmin
+        ? (prisma.promos.findMany({ where: { is_active: true }, orderBy: { updated_at: "desc" } }) as Promise<Promo[]>)
+        : ([] as Promo[]),
+      // Sign-ups waiting for approval, per training
+      isAdmin
+        ? (prisma.registrations.groupBy({
+            by: ["training_id"],
+            where: { status: "PENDING" },
+            _count: { _all: true },
+          }) as Promise<{ training_id: string; _count: { _all: number } }[]>)
+        : [],
+    ]);
+  const pendingOf = new Map(pendingGroups.map((g) => [g.training_id, g._count._all]));
 
   const countOf = (s: string) => counts.find((c: { status: string }) => c.status === s)?._count._all ?? 0;
 
@@ -65,12 +81,49 @@ export default async function DashboardPage() {
     .filter((t) => t.phase !== null);
   const openForSignUp = activeTrainings.filter((t) => isRegistrationOpen(t, now)).length;
   const registrants = activeTrainings.reduce((sum, t) => sum + t._count.registrations, 0);
+  const waiting = activeTrainings.reduce((sum, t) => sum + (pendingOf.get(t.id) ?? 0), 0);
 
   const livePromos = promos.filter((p) => promoStatus(p, now) === "LIVE");
   const scheduledPromos = promos.filter((p) => promoStatus(p, now) === "SCHEDULED");
   const shownPromos = [...livePromos, ...scheduledPromos].slice(0, 4);
 
-  const stats: { label: string; value: number; hint: string; href: string; icon: IconName; tone: string }[] = [
+  type Stat = { label: string; value: number; hint: string; href: string; icon: IconName; tone: string };
+  const total = counts.reduce((sum: number, c: { _count: { _all: number } }) => sum + c._count._all, 0);
+  const articleStats: Stat[] = [
+    {
+      label: "Total artikel",
+      value: total,
+      hint: "semua status",
+      href: "/dashboard/articles",
+      icon: "articles",
+      tone: "bg-[#0f1932]/[0.06] text-[#0f1932]",
+    },
+    {
+      label: "Published",
+      value: countOf("PUBLISHED"),
+      hint: "tampil di website",
+      href: "/dashboard/articles?status=PUBLISHED",
+      icon: "check",
+      tone: "bg-emerald-50 text-emerald-600",
+    },
+    {
+      label: "Draft",
+      value: countOf("DRAFT"),
+      hint: "belum terbit",
+      href: "/dashboard/articles?status=DRAFT",
+      icon: "draft",
+      tone: "bg-amber-50 text-amber-600",
+    },
+    {
+      label: "Archived",
+      value: countOf("ARCHIVED"),
+      hint: "disembunyikan",
+      href: "/dashboard/articles?status=ARCHIVED",
+      icon: "archive",
+      tone: "bg-slate-100 text-slate-500",
+    },
+  ];
+  const adminStats: Stat[] = [
     {
       label: "Artikel terbit",
       value: countOf("PUBLISHED"),
@@ -90,7 +143,7 @@ export default async function DashboardPage() {
     {
       label: "Pendaftar",
       value: registrants,
-      hint: "di training aktif",
+      hint: waiting ? `${waiting} menunggu persetujuan` : "di training aktif",
       href: "/dashboard/trainings",
       icon: "user",
       tone: "bg-violet-50 text-violet-600",
@@ -112,28 +165,70 @@ export default async function DashboardPage() {
       tone: "bg-rose-50 text-rose-600",
     },
   ];
+  const stats = isAdmin ? adminStats : articleStats;
 
-  const quickActions: { href: string; label: string; description: string; icon: IconName; external?: boolean }[] = [
-    { href: "/dashboard/articles/new", label: "Tulis artikel", description: "Artikel atau berita baru", icon: "pen" },
-    { href: "/dashboard/trainings/new", label: "Training baru", description: "Pendaftaran & sertifikat", icon: "award" },
-    { href: "/dashboard/promos/new", label: "Promo baru", description: "Flyer pop-up & section promo", icon: "megaphone" },
-    { href: "/", label: "Lihat website", description: "Buka beranda", icon: "external", external: true },
-  ];
+  const quickActions = (
+    [
+      { href: "/dashboard/articles/new", label: "Tulis artikel", description: "Artikel atau berita baru", icon: "pen" },
+      {
+        href: "/dashboard/categories",
+        label: "Kelola kategori",
+        description: "Kategori artikel",
+        icon: "tag",
+        editorOnly: true,
+      },
+      {
+        href: "/dashboard/trainings/new",
+        label: "Training baru",
+        description: "Pendaftaran & sertifikat",
+        icon: "award",
+        adminOnly: true,
+      },
+      {
+        href: "/dashboard/promos/new",
+        label: "Promo baru",
+        description: "Flyer pop-up & section promo",
+        icon: "megaphone",
+        adminOnly: true,
+      },
+      {
+        href: isAdmin ? "/" : "/news",
+        label: "Lihat website",
+        description: isAdmin ? "Buka beranda" : "Halaman News & Articles",
+        icon: "external",
+        external: true,
+      },
+    ] as {
+      href: string;
+      label: string;
+      description: string;
+      icon: IconName;
+      external?: boolean;
+      adminOnly?: boolean;
+      editorOnly?: boolean;
+    }[]
+  ).filter((a) => (isAdmin ? !a.editorOnly : !a.adminOnly));
 
   return (
     <div className="space-y-6">
       <PageHeader
         eyebrow={todayFormat.format(now)}
         title={`Halo, ${user.name.split(" ")[0]}`}
-        description="Ringkasan artikel, training, dan promo di website."
+        description={
+          isAdmin
+            ? "Ringkasan artikel, training, dan promo di website."
+            : "Ringkasan konten News & Articles di website."
+        }
       />
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:gap-4 xl:grid-cols-5">
+      <div
+        className={`grid grid-cols-2 gap-3 lg:gap-4 ${isAdmin ? "sm:grid-cols-3 xl:grid-cols-5" : "lg:grid-cols-4"}`}
+      >
         {stats.map((stat) => (
           <Link
             key={stat.label}
             href={stat.href}
-            className="group rounded-2xl border border-slate-200/70 bg-white p-4 shadow-[0_1px_2px_rgba(15,25,50,0.04)] transition last:col-span-2 hover:-translate-y-0.5 hover:shadow-md sm:p-5 sm:last:col-span-1"
+            className={`group rounded-2xl border border-slate-200/70 bg-white p-4 shadow-[0_1px_2px_rgba(15,25,50,0.04)] transition hover:-translate-y-0.5 hover:shadow-md sm:p-5 ${isAdmin ? "last:col-span-2 sm:last:col-span-1" : ""}`}
           >
             <div className="flex items-center justify-between gap-2">
               <p className="text-xs font-semibold text-slate-500">{stat.label}</p>
@@ -149,58 +244,67 @@ export default async function DashboardPage() {
 
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="space-y-6">
-          <Card
-            title="Training berjalan"
-            description="Yang sedang buka pendaftaran atau masih dalam masa klaim sertifikat"
-            actions={
-              <Link href="/dashboard/trainings" className={buttonClass("ghost", "sm")}>
-                Lihat semua
-                <Icon name="right" className="h-3.5 w-3.5" />
-              </Link>
-            }
-            bodyClassName=""
-          >
-            {activeTrainings.length === 0 ? (
-              <div className="px-5 py-8 text-center">
-                <p className="text-sm text-slate-500">Belum ada training yang berjalan.</p>
-                <Link href="/dashboard/trainings/new" className={`${buttonClass("primary", "sm")} mt-3`}>
-                  <Icon name="plus" />
-                  Buat training
+          {isAdmin && (
+            <Card
+              title="Training berjalan"
+              description="Yang sedang buka pendaftaran atau masih dalam masa klaim sertifikat"
+              actions={
+                <Link href="/dashboard/trainings" className={buttonClass("ghost", "sm")}>
+                  Lihat semua
+                  <Icon name="right" className="h-3.5 w-3.5" />
                 </Link>
-              </div>
-            ) : (
-              <ul className="divide-y divide-slate-100">
-                {activeTrainings.slice(0, 5).map((t) => (
-                  <li key={t.id}>
-                    <Link
-                      href={`/dashboard/trainings/${t.id}`}
-                      className="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-3.5 hover:bg-slate-50/60"
-                    >
-                      <div className="min-w-0 flex-1 basis-56 space-y-1">
-                        <p className="truncate text-sm font-semibold text-[#0f1932]">{t.title}</p>
-                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
-                          <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${t.phase!.className}`}>
-                            {t.phase!.label}
-                          </span>
-                          <span>{formatTrainingDate(t.starts_on, t.ends_on, "id-ID")}</span>
+              }
+              bodyClassName=""
+            >
+              {activeTrainings.length === 0 ? (
+                <div className="px-5 py-8 text-center">
+                  <p className="text-sm text-slate-500">Belum ada training yang berjalan.</p>
+                  <Link href="/dashboard/trainings/new" className={`${buttonClass("primary", "sm")} mt-3`}>
+                    <Icon name="plus" />
+                    Buat training
+                  </Link>
+                </div>
+              ) : (
+                <ul className="divide-y divide-slate-100">
+                  {activeTrainings.slice(0, 5).map((t) => (
+                    <li key={t.id}>
+                      <Link
+                        href={`/dashboard/trainings/${t.id}`}
+                        className="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-3.5 hover:bg-slate-50/60"
+                      >
+                        <div className="min-w-0 flex-1 basis-56 space-y-1">
+                          <p className="truncate text-sm font-semibold text-[#0f1932]">{t.title}</p>
+                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+                            <span
+                              className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${t.phase!.className}`}
+                            >
+                              {t.phase!.label}
+                            </span>
+                            <span>{formatTrainingDate(t.starts_on, t.ends_on, "id-ID")}</span>
+                            {(pendingOf.get(t.id) ?? 0) > 0 && (
+                              <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700">
+                                {pendingOf.get(t.id)} menunggu persetujuan
+                              </span>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex gap-5 text-right">
-                        <div>
-                          <p className="text-base font-extrabold text-[#0f1932]">{t._count.registrations}</p>
-                          <p className="text-[11px] text-slate-400">pendaftar</p>
+                        <div className="flex gap-5 text-right">
+                          <div>
+                            <p className="text-base font-extrabold text-[#0f1932]">{t._count.registrations}</p>
+                            <p className="text-[11px] text-slate-400">pendaftar</p>
+                          </div>
+                          <div>
+                            <p className="text-base font-extrabold text-[#0f1932]">{t._count.certificates}</p>
+                            <p className="text-[11px] text-slate-400">sertifikat</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-base font-extrabold text-[#0f1932]">{t._count.certificates}</p>
-                          <p className="text-[11px] text-slate-400">sertifikat</p>
-                        </div>
-                      </div>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Card>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Card>
+          )}
 
           <Card
             title="Artikel terakhir diubah"
@@ -240,51 +344,53 @@ export default async function DashboardPage() {
             </ul>
           </Card>
 
-          <Card
-            title="Promo"
-            description={shownPromos.length ? "Yang sedang tayang dan terjadwal" : undefined}
-            actions={
-              <Link href="/dashboard/promos" className={buttonClass("ghost", "sm")}>
-                Kelola
-              </Link>
-            }
-            bodyClassName="p-2"
-          >
-            {shownPromos.length === 0 ? (
-              <p className="px-3 py-4 text-center text-xs text-slate-500">Tidak ada promo yang tayang.</p>
-            ) : (
-              <ul>
-                {shownPromos.map((p) => {
-                  const live = promoStatus(p, now) === "LIVE";
-                  return (
-                    <li key={p.id}>
-                      <Link
-                        href={`/dashboard/promos/${p.id}`}
-                        className="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-50"
-                      >
-                        <img
-                          src={p.image_url}
-                          alt=""
-                          className="h-12 w-10 shrink-0 rounded-md object-cover object-top ring-1 ring-slate-200"
-                        />
-                        <span className="min-w-0 flex-1">
-                          <span className="block truncate text-sm font-medium text-slate-700">{p.title}</span>
-                          <span className="flex items-center gap-1.5 text-[11px] text-slate-400">
-                            <span className={`h-1.5 w-1.5 rounded-full ${live ? "bg-emerald-500" : "bg-sky-400"}`} />
-                            {live
-                              ? p.ends_at
-                                ? `Tayang s.d. ${shortDate.format(p.ends_at)}`
-                                : "Tayang"
-                              : `Mulai ${shortDate.format(p.starts_at!)}`}
+          {isAdmin && (
+            <Card
+              title="Promo"
+              description={shownPromos.length ? "Yang sedang tayang dan terjadwal" : undefined}
+              actions={
+                <Link href="/dashboard/promos" className={buttonClass("ghost", "sm")}>
+                  Kelola
+                </Link>
+              }
+              bodyClassName="p-2"
+            >
+              {shownPromos.length === 0 ? (
+                <p className="px-3 py-4 text-center text-xs text-slate-500">Tidak ada promo yang tayang.</p>
+              ) : (
+                <ul>
+                  {shownPromos.map((p) => {
+                    const live = promoStatus(p, now) === "LIVE";
+                    return (
+                      <li key={p.id}>
+                        <Link
+                          href={`/dashboard/promos/${p.id}`}
+                          className="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-50"
+                        >
+                          <img
+                            src={p.image_url}
+                            alt=""
+                            className="h-12 w-10 shrink-0 rounded-md object-cover object-top ring-1 ring-slate-200"
+                          />
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-sm font-medium text-slate-700">{p.title}</span>
+                            <span className="flex items-center gap-1.5 text-[11px] text-slate-400">
+                              <span className={`h-1.5 w-1.5 rounded-full ${live ? "bg-emerald-500" : "bg-sky-400"}`} />
+                              {live
+                                ? p.ends_at
+                                  ? `Tayang s.d. ${shortDate.format(p.ends_at)}`
+                                  : "Tayang"
+                                : `Mulai ${shortDate.format(p.starts_at!)}`}
+                            </span>
                           </span>
-                        </span>
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </Card>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </Card>
+          )}
 
           <Card
             title="Draft artikel"
@@ -292,7 +398,9 @@ export default async function DashboardPage() {
             bodyClassName="p-2"
           >
             {drafts.length === 0 ? (
-              <p className="px-3 py-4 text-center text-xs text-slate-500">Tidak ada draft. Semua artikel sudah terbit.</p>
+              <p className="px-3 py-4 text-center text-xs text-slate-500">
+                Tidak ada draft. Semua artikel sudah terbit.
+              </p>
             ) : (
               <ul>
                 {drafts.map((draft: (typeof drafts)[number]) => (

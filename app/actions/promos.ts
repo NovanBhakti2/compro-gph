@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import * as z from "zod";
 import { prisma } from "@/lib/prisma";
-import { requireDashboardUser } from "@/lib/dal";
+import { requireAdmin } from "@/lib/dal";
 import { endOfDayWib, startOfDayWib } from "@/lib/promos";
 
 const URL_OR_PATH = /^(https?:\/\/|\/)\S+$/;
@@ -117,7 +117,7 @@ function revalidatePromos() {
 }
 
 export async function createPromo(_state: PromoFormState, formData: FormData): Promise<PromoFormState> {
-  await requireDashboardUser();
+  await requireAdmin();
   const parsed = parsePromo(formData);
   if (!parsed.success) return { errors: z.flattenError(parsed.error).fieldErrors };
 
@@ -136,7 +136,7 @@ export async function updatePromo(
   _state: PromoFormState,
   formData: FormData
 ): Promise<PromoFormState> {
-  await requireDashboardUser();
+  await requireAdmin();
   const parsed = parsePromo(formData);
   if (!parsed.success) return { errors: z.flattenError(parsed.error).fieldErrors };
 
@@ -152,7 +152,7 @@ export async function updatePromo(
 
 /** Turn a promo on/off from the list without opening the form. */
 export async function togglePromo(id: string) {
-  await requireDashboardUser();
+  await requireAdmin();
   const promo = await prisma.promos.findUnique({ where: { id }, select: { is_active: true } });
   if (!promo) return;
   await prisma.promos.update({ where: { id }, data: { is_active: !promo.is_active } });
@@ -160,7 +160,7 @@ export async function togglePromo(id: string) {
 }
 
 export async function deletePromo(id: string) {
-  await requireDashboardUser();
+  await requireAdmin();
   await prisma.promos.delete({ where: { id } }).catch(() => null);
   revalidatePromos();
 }

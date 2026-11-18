@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import QRCode from "qrcode";
 import { prisma } from "@/lib/prisma";
 import { isEmailEnabled } from "@/lib/email";
-import { requireDashboardUser } from "@/lib/dal";
+import { requireAdmin } from "@/lib/dal";
 import {
   claimStatus,
   claimUrl,
@@ -31,7 +31,10 @@ import {
   ClaimLinkCard,
   ClaimToggle,
   CopyLink,
+  ApproveAllButton,
   DeleteRegistrationButton,
+  ImportRegistrationsForm,
+  RegistrationDecision,
   DeleteTrainingButton,
 } from "@/components/organisms/dashboard/TrainingClient";
 import { Card, EmptyState, Icon, buttonClass } from "@/components/organisms/dashboard/ui";
@@ -52,7 +55,7 @@ const claimedFormat = new Intl.DateTimeFormat("id-ID", {
 });
 
 export default async function TrainingPage({ params }: { params: Promise<{ id: string }> }) {
-  await requireDashboardUser();
+  await requireAdmin();
   const { id } = await params;
   // Also runs daily from the cron; here so the page never shows overdue data
   await purgeExpiredRegistrations();
@@ -69,6 +72,12 @@ export default async function TrainingPage({ params }: { params: Promise<{ id: s
   const registrationOpen = isRegistrationOpen(training);
   const claimedKeys = new Set(training.certificates.map((c: Certificate) => c.contact_key));
   const claimedCount = training.registrations.filter((r: Registration) => claimedKeys.has(contactKey(r.email))).length;
+  const pendingCount = training.registrations.filter((r: Registration) => r.status === "PENDING").length;
+  const approvedCount = training.registrations.filter((r: Registration) => r.status === "APPROVED").length;
+  // Waiting sign-ups first: they need the admin's attention
+  const registrations = [...training.registrations].sort(
+    (a: Registration, b: Registration) => Number(b.status === "PENDING") - Number(a.status === "PENDING"),
+  );
 
   const status = claimStatus(training);
   const emailEnabled = isEmailEnabled();
@@ -154,14 +163,19 @@ export default async function TrainingPage({ params }: { params: Promise<{ id: s
             description={
               training.registrations_purged_at
                 ? undefined
-                : `${claimedCount} sudah klaim sertifikat. Hanya email di daftar ini yang bisa klaim.`
+                : `${pendingCount} menunggu · ${approvedCount} disetujui · ${claimedCount} sudah klaim. Hanya pendaftar yang disetujui yang bisa klaim sertifikat.`
             }
             actions={
               training.registrations.length > 0 && (
-                <a href={`/api/trainings/${training.id}/registrations`} className={buttonClass("secondary", "sm")}>
-                  <Icon name="download" />
-                  Export Excel
-                </a>
+                <div className="flex flex-wrap items-center justify-end gap-2">
+                  {pendingCount > 0 && (
+                    <ApproveAllButton trainingId={training.id} count={pendingCount} emailEnabled={emailEnabled} />
+                  )}
+                  <a href={`/api/trainings/${training.id}/registrations`} className={buttonClass("secondary", "sm")}>
+                    <Icon name="download" />
+                    Export Excel
+                  </a>
+                </div>
               )
             }
             bodyClassName=""
@@ -179,39 +193,48 @@ export default async function TrainingPage({ params }: { params: Promise<{ id: s
                   hari setelah {training.claim_until ? "batas klaim" : "training selesai"}). Export dulu kalau perlu
                   arsip.
                 </p>
+                <div className="flex border-b border-slate-100 bg-slate-50/50 px-5 py-3">
+                  <ImportRegistrationsForm trainingId={training.id} />
+                </div>
                 {training.registrations.length === 0 ? (
                   <EmptyState
                     title="Belum ada pendaftar"
-                    description="Pendaftar dari halaman /register akan muncul di sini."
+                    description="Pendaftar dari halaman /register atau hasil import Excel akan muncul di sini."
                   />
                 ) : (
                   <ul className="divide-y divide-slate-100">
-                    {training.registrations.map((r: Registration) => {
+                    {registrations.map((r: Registration) => {
                       const claimed = claimedKeys.has(contactKey(r.email));
                       return (
                         <li key={r.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3">
                           <div className="min-w-0 flex-1 basis-56">
                             <p className="truncate text-sm font-semibold text-[#0f1932]">{r.name}</p>
                             <p className="truncate text-xs text-slate-400">
-                              {r.email} ·{" "}
-                              <a
-                                href={whatsappUrl(r.phone)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                title="Chat WhatsApp"
-                                className="hover:text-emerald-600 hover:underline"
-                              >
-                                {formatPhone(r.phone)}
-                              </a>
+                              {r.email}
+                              {/* Imported lists may have no phone number */}
+                              {r.phone && (
+                                <>
+                                  {" · "}
+                                  <a
+                                    href={whatsappUrl(r.phone)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    title="Chat WhatsApp"
+                                    className="hover:text-emerald-600 hover:underline"
+                                  >
+                                    {formatPhone(r.phone)}
+                                  </a>
+                                </>
+                              )}
                             </p>
                           </div>
-                          <span
-                            className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-                              claimed ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"
-                            }`}
-                          >
-                            {claimed ? "Sudah klaim" : "Belum klaim"}
-                          </span>
+                          <RegistrationDecision
+                            id={r.id}
+                            status={r.status}
+                            claimed={claimed}
+                            notified={Boolean(r.notified_at)}
+                            emailEnabled={emailEnabled}
+                          />
                           <span className="w-28 text-right text-[11px] text-slate-400">
                             {claimedFormat.format(r.created_at)}
                           </span>

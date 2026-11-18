@@ -33,7 +33,13 @@ export function ClaimForm({ slug, dict: t }: Props) {
   }, [state]);
   // The notice in the card belongs to the response it came with; X hides that one
   const [alertClosedFor, setAlertClosedFor] = useState<ClaimState>();
-  const showNotRegistered = state?.message === "not-registered" && alertClosedFor !== state;
+  // Registration problems: unknown email, still waiting for approval, or rejected
+  const notices: Record<string, { title: string; text: string; pending?: boolean }> = {
+    "not-registered": { title: t.notRegisteredTitle, text: t.notRegistered },
+    pending: { title: t.pendingTitle, text: t.pendingText, pending: true },
+    rejected: { title: t.rejectedTitle, text: t.rejectedText },
+  };
+  const notice = state?.message && alertClosedFor !== state ? notices[state.message] : undefined;
 
   const errors = state?.errors;
   const cleanName = name.trim().replace(/\s+/g, " ");
@@ -149,10 +155,12 @@ export function ClaimForm({ slug, dict: t }: Props) {
         className="space-y-5"
       >
         <p className="text-sm text-slate-500">{t.claimIntro}</p>
-        {showNotRegistered && (
+        {notice && (
           <div
             role="alert"
-            className="flex items-start gap-3 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 ring-1 ring-red-100"
+            className={`flex items-start gap-3 rounded-xl px-4 py-3 text-sm ring-1 ${
+              notice.pending ? "bg-amber-50 text-amber-800 ring-amber-100" : "bg-red-50 text-red-700 ring-red-100"
+            }`}
           >
             <svg className="mt-0.5 h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
               <path
@@ -163,14 +171,20 @@ export function ClaimForm({ slug, dict: t }: Props) {
               />
             </svg>
             <div className="min-w-0 flex-1">
-              <p className="font-semibold">{t.notRegisteredTitle}</p>
-              <p className="mt-0.5 leading-relaxed text-red-600">{t.notRegistered}</p>
+              <p className="font-semibold">{notice.title}</p>
+              <p className={`mt-0.5 leading-relaxed ${notice.pending ? "text-amber-700" : "text-red-600"}`}>
+                {notice.text}
+              </p>
             </div>
             <button
               type="button"
               onClick={() => setAlertClosedFor(state)}
               aria-label={t.dismiss}
-              className="-mr-1 -mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-red-400 transition hover:bg-red-100 hover:text-red-700"
+              className={`-mr-1 -mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition ${
+                notice.pending
+                  ? "text-amber-500 hover:bg-amber-100 hover:text-amber-800"
+                  : "text-red-400 hover:bg-red-100 hover:text-red-700"
+              }`}
             >
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />

@@ -46,7 +46,7 @@ export function RegisterForm({ lang, dict: t, trainings, initialTraining, notice
           {r.location && <p className="text-xs text-slate-300">{r.location}</p>}
         </div>
         <p className="text-sm leading-relaxed text-slate-500">
-          {t.successText}
+          {r.status === "APPROVED" ? t.approvedText : t.successText}
           <br />
           <span className="font-semibold text-slate-800">{r.email}</span>
         </p>
